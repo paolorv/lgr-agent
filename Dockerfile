@@ -1,3 +1,15 @@
+#######################################################################
+###################### HOW TO RUN ROSA+REMEMBR ########################
+# Run the /milvusconfig/./start_milvus.sh script to start MilvusDB
+# Run ./demo.sh to build the container passing it a CUDA-enabled GPU
+# Once inside, run tmux and setup 4 panes:
+# 1) ./runwaffletester.sh to launch Gazebo+WaffleBot
+# 2) source /opt/venv/remembr/bin/activate && python remembr_server.py to start Remembr server
+# 3) cd /app/ && source /opt/venv/rosa/bin/activate && start to launch ROSA waffle bot controller (able to call Remembr)
+# 4) ./runteleop.sh or ./runcamerafeed.sh to check for the status of the robot and control it
+#######################################################################
+#######################################################################
+
 # ============================================================
 #  Base image: ROS Noetic (Python 3.9) → ROSA environment
 # ============================================================
