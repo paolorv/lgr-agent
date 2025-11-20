@@ -25,7 +25,9 @@ RUN apt-get update && apt-get install -y curl lsb-release gnupg software-propert
 # ------------------------------------------------------------
 RUN apt-get update && apt-get install -y --no-install-recommends \
     # Python 3.10
-    python3.10 python3.10-venv python3.10-dev \
+    #python3.10 python3.10-venv python3.10-dev \
+    # Python 3.12
+    python3.12 python3.12-venv python3.12-dev \
     # ROS2 packages that exist in Jazzy
     ros-jazzy-turtlesim \
     ros-jazzy-turtlebot3-gazebo \
@@ -63,7 +65,7 @@ ENV __GLX_VENDOR_LIBRARY_NAME=nvidia
 # ============================================================
 # Create single Python 3.10 venv used by ROSA + REMEMBR
 # ============================================================
-RUN python3.10 -m venv /opt/venv/csagent && \
+RUN python3.12 -m venv /opt/venv/csagent && \
     /opt/venv/csagent/bin/python -m ensurepip && \
     /opt/venv/csagent/bin/pip install -U pip setuptools wheel
 
@@ -71,7 +73,7 @@ ENV PATH="/root/.cargo/bin:${PATH}"
 ENV CSAGENT_ENV=/opt/venv/csagent
 
 # Ensure python3 points to python3.10
-RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1
+RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.12 1
 
 # ------------------------------------------------------------
 # Useful environment variables for TurtleBot3 and workspace
@@ -114,26 +116,26 @@ RUN /bin/bash -lc '\
 # ============================================================
 # REMEMBR + VILA installation (inside same venv)
 # ============================================================
-WORKDIR /app/remembr
+#WORKDIR /app/remembr
 
 # Install REMEMBR base (editable)
-RUN /opt/venv/csagent/bin/pip install -e .
+#RUN /opt/venv/csagent/bin/pip install -e .
 
 # Create deps and install VILA + flash-attn wheel (adjust wheel URL if needed)
-RUN mkdir -p deps && cd deps && \
-    git clone https://github.com/NVlabs/VILA.git && \
-    cd VILA && \
-    /opt/venv/csagent/bin/pip install --no-cache-dir https://github.com/Dao-AILab/flash-attention/releases/download/v2.5.8/flash_attn-2.5.8+cu122torch2.3cxx11abiFALSE-cp310-cp310-linux_x86_64.whl || true && \
-    /opt/venv/csagent/bin/pip install -e . && \
-    /opt/venv/csagent/bin/pip install -e ".[train]" && \
-    /opt/venv/csagent/bin/pip install -e ".[eval]" && \
-    /opt/venv/csagent/bin/pip install -U "transformers==4.46.0"
+#RUN mkdir -p deps && cd deps && \
+#    git clone https://github.com/NVlabs/VILA.git && \
+#    cd VILA && \
+#    /opt/venv/csagent/bin/pip install --no-cache-dir https://github.com/Dao-AILab/flash-attention/releases/download/v2.5.8/flash_attn-2.5.8+cu122torch2.3cxx11abiFALSE-cp310-cp310-linux_x86_64.whl || true && \
+#    /opt/venv/csagent/bin/pip install -e . && \
+#    /opt/venv/csagent/bin/pip install -e ".[train]" && \
+#    /opt/venv/csagent/bin/pip install -e ".[eval]" && \
+#    /opt/venv/csagent/bin/pip install -U "transformers==4.46.0"
 
 # REMEMBR extra requirements (pin transformers once, avoid conflicting downgrades)
-WORKDIR /app/remembr
-RUN /opt/venv/csagent/bin/pip install -r requirements.txt --no-cache-dir && \
-    /opt/venv/csagent/bin/pip install --no-cache-dir "transformers==4.46.0" "peft==0.11.1" "sentence-transformers==2.7.0" && \
-    /opt/venv/csagent/bin/pip install --no-cache-dir flask
+#WORKDIR /app/remembr
+#RUN /opt/venv/csagent/bin/pip install -r requirements.txt --no-cache-dir && \
+#    /opt/venv/csagent/bin/pip install --no-cache-dir "transformers==4.46.0" "peft==0.11.1" "sentence-transformers==2.7.0" && \
+#    /opt/venv/csagent/bin/pip install --no-cache-dir flask
 
 # ============================================================
 # Helper script to activate the venv in a running container

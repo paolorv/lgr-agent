@@ -37,6 +37,10 @@ python3.12 /opt/ros/jazzy/bin/ros2 run ros_gz_bridge parameter_bridge \
 export GZ_SIM_RESOURCE_PATH=/opt/ros/jazzy/share:/opt/ros/jazzy/share/turtlebot3_gazebo/models
 gz sim -v 4 empty.sdf
 
+BETTER!
+ros2 launch turtlebot3_gazebo turtlebot3_world.launch.py
+
+
 ### SPAWN THE TURTLEBOT:
 export GZ_SIM_RESOURCE_PATH=/opt/ros/jazzy/share:/opt/ros/jazzy/share/turtlebot3_gazebo/models
 python3.12 /opt/ros/jazzy/bin/ros2 run ros_gz_sim create \
