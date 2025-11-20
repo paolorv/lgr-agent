@@ -62,53 +62,6 @@ echo "Building the $CONTAINER_NAME Docker image..."
 echo "Running the Docker container..."
 
 # Detect GPU and set appropriate flags
-#GPU_FLAGS=""
-#EXTRA_ENV=""#
-
-#if command -v nvidia-smi &> /dev/null; then
-#    echo "Detected NVIDIA GPU via nvidia-smi"
-#    
-#    # Check if nvidia-container-runtime is available
-#    if docker info 2>/dev/null | grep -q "Runtimes:.*nvidia"; then
-#        echo "  ✓ NVIDIA Docker runtime detected"
-#        GPU_FLAGS="--gpus all --runtime=nvidia"
-#        EXTRA_ENV="-e NVIDIA_VISIBLE_DEVICES=all -e NVIDIA_DRIVER_CAPABILITIES=all -e __GLX_VENDOR_LIBRARY_NAME=nvidia"
- #   elif docker run --rm --gpus all nvidia/cuda:11.0-base nvidia-smi &>/dev/null; then
-#        echo "  ✓ Docker --gpus flag working"
-#        GPU_FLAGS="--gpus all"
-#        EXTRA_ENV="-e NVIDIA_VISIBLE_DEVICES=all -e NVIDIA_DRIVER_CAPABILITIES=all -e __GLX_VENDOR_LIBRARY_NAME=nvidia"
-#    else
-#        echo "  ✗ NVIDIA Docker runtime not properly configured"
-#        echo "  Please install nvidia-container-toolkit:"
-#        echo "    sudo apt-get install -y nvidia-container-toolkit"
-#        echo "    sudo systemctl restart docker"
-#        echo "  Falling back to /dev/dri passthrough..."
-#        GPU_FLAGS="--device /dev/dri:/dev/dri"
-#    fi
-#elif [ -d /dev/dri ]; then
-#    echo "Detected /dev/dri — enabling generic GPU (Intel/AMD) passthrough"
- #   GPU_FLAGS="--device /dev/dri:/dev/dri"
- #   
- #   # Find DRI library path
- #   if [ -d /usr/lib/x86_64-linux-gnu/dri ]; then
- #       DRI_LIB_PATH="/usr/lib/x86_64-linux-gnu/dri"
- #   elif [ -d /usr/lib/dri ]; then
- #       DRI_LIB_PATH="/usr/lib/dri"
- #   else
- #       DRI_LIB_PATH=""
- #       echo "Warning: could not find host DRI driver folder."
- #   fi
- #   
- #   if [ -n "$DRI_LIB_PATH" ]; then
- #       GPU_FLAGS="$GPU_FLAGS -v ${DRI_LIB_PATH}:${DRI_LIB_PATH}:ro"
- #   fi
-#else
-#    echo "No GPU detected — running with software rendering"
-#    GPU_FLAGS=""
-#    EXTRA_ENV="-e LIBGL_ALWAYS_SOFTWARE=1"
-#fi
-
-# Detect GPU and set appropriate flags
 GPU_FLAGS=""
 EXTRA_ENV=""
 
