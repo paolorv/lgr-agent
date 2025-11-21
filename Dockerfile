@@ -84,7 +84,7 @@ ENV COLCON_DEFAULTS_FILE=/root/colcon_defaults.yaml
 # Update root bashrc: source ros2 & venv and provide start alias
 RUN echo "source /opt/ros/jazzy/setup.bash" >> /root/.bashrc && \
     echo "source /opt/venv/csagent/bin/activate" >> /root/.bashrc && \
-    echo "alias start='colcon build --packages-select waffle_agent && source install/setup.bash && ros2 launch waffle_agent agent.launch.py'" >> /root/.bashrc && \
+    echo "alias start='colcon build --base-paths src --symlink-install --packages-select waffle_agent && source install/setup.bash && ros2 launch waffle_agent agent.launch.py'" >> /root/.bashrc && \
     #echo "alias start='catkin build && source devel/setup.bash && roslaunch waffle_agent agent.launch'" >> /root/.bashrc && \
     echo "export TURTLEBOT3_MODEL=${TURTLEBOT3_MODEL}" >> /root/.bashrc && \
     echo "export COLCON_DEFAULTS_FILE=${COLCON_DEFAULTS_FILE}" >> /root/.bashrc
@@ -146,5 +146,5 @@ RUN echo '#!/bin/bash\nsource /opt/venv/csagent/bin/activate' > /app/use_csagent
 
 # Set working dir and default command: interactive shell with ROS2 + venv sourced
 WORKDIR /app
-CMD ["/bin/bash", "-c", "source /opt/ros/jazzy/setup.bash && source /opt/venv/csagent/bin/activate && echo 'ROSA+REMEMBR environment ready on ROS2 Jazzy with Python 3.10' && echo 'Run runwaffletester.sh to launch the Gazebo test environment, then run `start` to build and launch the rosa_waffle_bot controller.' && /bin/bash"]
+CMD ["/bin/bash", "-c", "source /opt/ros/jazzy/setup.bash && source /opt/venv/csagent/bin/activate && echo 'ROSA+REMEMBR environment ready on ROS2 Jazzy with Python 3.12' && echo 'Run runwaffletester.sh to launch the Gazebo test environment, then run `start` to build and launch the rosa_waffle_bot controller.' && /bin/bash"]
 

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3.9
 #  Copyright (c) 2024. Jet Propulsion Laboratory. All rights reserved.
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +19,7 @@ from datetime import datetime
 
 import dotenv
 import pyinputplus as pyip
-import rclpy
+import rospy
 from langchain.agents import tool, Tool
 # from langchain_ollama import ChatOllama
 from rich.console import Console
@@ -72,7 +72,7 @@ class TurtleAgent(ROSA):
         )
 
         super().__init__(
-            ros_version=2,
+            ros_version=1,
             llm=self.__llm,
             tools=[cool_turtle_tool, blast_off],
             tool_packages=[waffle_tools],
@@ -302,21 +302,15 @@ class TurtleAgent(ROSA):
         console.print("[bold]End of events[/bold]\n")
 
 
-def main(args=None):
-    rclpy.init(args=args)
-    
+def main():
     dotenv.load_dotenv(dotenv.find_dotenv())
 
-    node = rclpy.create_node("waffle_agent")
-    streaming = node.declare_parameter("streaming", False).value
-    
+    streaming = rospy.get_param("~streaming", False)
     turtle_agent = TurtleAgent(verbose=False, streaming=streaming)
 
     asyncio.run(turtle_agent.run())
-    
-    node.destroy_node()
-    rclpy.shutdown()
 
 
 if __name__ == "__main__":
+    rospy.init_node("rosa", log_level=rospy.INFO)
     main()

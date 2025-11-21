@@ -1,26 +1,34 @@
-from setuptools import find_packages, setup
+from setuptools import setup
+import os
+from glob import glob
 
 package_name = 'waffle_agent'
 
 setup(
     name=package_name,
     version='0.0.1',
-    packages=find_packages(exclude=['test']),
+    packages=[package_name, f'{package_name}.tools'],
+    # Map the package name to the actual directory location
+    package_dir={
+        package_name: 'scripts',
+        f'{package_name}.tools': 'scripts/tools'
+    },
     data_files=[
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
+        (os.path.join('share', package_name, 'launch'), glob('launch/*.launch.py')),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
-    maintainer='Rob Royce',
-    maintainer_email='Rob.Royce@jpl.nasa.gov',
-    description='Embodied ROSA agent for the TurtleSim robot.',
-    license='Apache 2.0',
+    maintainer='User',
+    maintainer_email='user@todo.todo',
+    description='LLM Agent for Waffle Robot',
+    license='Apache-2.0',
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'waffle_agent = waffle_agent.scripts.waffle_agent:main',
+            'agent = waffle_agent.waffle_agent:main',
         ],
     },
 )

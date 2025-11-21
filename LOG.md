@@ -71,3 +71,16 @@ python3.12 /opt/ros/jazzy/bin/ros2 run ros_gz_bridge parameter_bridge \
 source /opt/ros/jazzy/setup.bash
 export TURTLEBOT3_MODEL=waffle_pi
 python3.12 /opt/ros/jazzy/lib/turtlebot3_teleop/teleop_keyboard
+
+
+
+
+
+# ##########################################################
+Fixing at runtime the building:
+
+- install python3-dotenv on apt (try to install directly, not from apt: python-dotenv and dotenv are different!)
+- /usr/bin/python3 -m pip install pyinputplus rosa rich langchain langchain-ollama requests --break-system-packages
+
+FINAL:
+/usr/bin/python3 -m pip install python-dotenv pyinputplus jpl-rosa rich langchain langchain-ollama requests --break-system-packages
