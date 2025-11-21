@@ -6,7 +6,7 @@ LABEL authors="Paolo Riva"
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV HEADLESS=false
-ARG DEVELOPMENT=true
+ARG DEVELOPMENT=false
 
 # ------------------------------------------------------------
 # Add Gazebo Harmonic (OSRF) apt repository and deadsnakes PPA for Python 3.10
@@ -72,7 +72,7 @@ RUN python3.12 -m venv /opt/venv/csagent && \
 ENV PATH="/root/.cargo/bin:${PATH}"
 ENV CSAGENT_ENV=/opt/venv/csagent
 
-# Ensure python3 points to python3.10
+# Ensure python3 points to python3.12 (Conflicts with ROS2 Jazzy default python3.10)
 RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.12 1
 
 # ------------------------------------------------------------
@@ -84,7 +84,8 @@ ENV COLCON_DEFAULTS_FILE=/root/colcon_defaults.yaml
 # Update root bashrc: source ros2 & venv and provide start alias
 RUN echo "source /opt/ros/jazzy/setup.bash" >> /root/.bashrc && \
     echo "source /opt/venv/csagent/bin/activate" >> /root/.bashrc && \
-    echo "alias start='colcon build --symlink-install && source install/setup.bash && ros2 launch waffle_agent agent.launch'" >> /root/.bashrc && \
+    echo "alias start='colcon build --packages-select waffle_agent && source install/setup.bash && ros2 launch waffle_agent agent.launch.py'" >> /root/.bashrc && \
+    #echo "alias start='catkin build && source devel/setup.bash && roslaunch waffle_agent agent.launch'" >> /root/.bashrc && \
     echo "export TURTLEBOT3_MODEL=${TURTLEBOT3_MODEL}" >> /root/.bashrc && \
     echo "export COLCON_DEFAULTS_FILE=${COLCON_DEFAULTS_FILE}" >> /root/.bashrc
 
@@ -102,7 +103,7 @@ WORKDIR /app/
 # ============================================================
 # Install ROSA and common Python deps (use venv pip)
 # ============================================================
-RUN /opt/venv/csagent/bin/pip install -U python-dotenv empy
+RUN /opt/venv/csagent/bin/pip install -U python-dotenv empy PyQt5 PySide2 catkin_pkg
 
 # Install ROSA: editable in dev, otherwise install from pip if available
 RUN /bin/bash -lc '\
