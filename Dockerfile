@@ -94,6 +94,20 @@ RUN echo "source /opt/ros/jazzy/setup.bash" >> /root/.bashrc && \
 # ============================================================
 RUN rosdep init || true && rosdep update
 
+##############FROM HERE, CHECK IF WE NEED TO ADD --break-system-packages TO PIP INSTALLS##############
+
+# ============================================================
+# Install VILA for REMEMBR's later use, in the global python env (here to avoid re-installing at each REMEMBR change)
+# ============================================================
+#RUN mkdir -p deps && cd deps && \
+#    git clone https://github.com/NVlabs/VILA.git && \
+#    cd VILA && \
+#    /usr/bin/python3 -m pip install --no-cache-dir https://github.com/Dao-AILab/flash-attention/releases/download/v2.5.8/flash_attn-2.5.8+cu122torch2.3cxx11abiFALSE-cp310-cp310-linux_x86_64.whl || true --break-system-packages && \
+#    /usr/bin/python3 -m pip install -e . && \
+#    /usr/bin/python3 -m pip install -e ".[train]" --break-system-packages && \
+#    /usr/bin/python3 -m pip install -e ".[eval]" --break-system-packages && \
+#    /usr/bin/python3 -m pip install -U "transformers==4.46.0" --break-system-packages
+
 # ============================================================
 # Copy project into image
 # ============================================================
@@ -101,9 +115,9 @@ COPY . /app/
 WORKDIR /app/
 
 # ============================================================
-# Install ROSA and common Python deps (use venv pip)
+# Install ROSA and common Python deps (use venv pip) -------> CHECK HOW IT'S INSTALLED AD WHERE: REDUNDANCY
 # ============================================================
-RUN /opt/venv/csagent/bin/pip install -U python-dotenv empy PyQt5 PySide2 catkin_pkg
+#RUN /opt/venv/csagent/bin/pip install -U python-dotenv empy PyQt5 PySide2 catkin_pkg
 
 # Install ROSA: editable in dev, otherwise install from pip if available
 RUN /bin/bash -lc '\
@@ -114,29 +128,59 @@ RUN /bin/bash -lc '\
         /opt/venv/csagent/bin/pip install -U jpl-rosa>=1.0.7 || true ; \
     fi'
 
+# Install Waffle-agent dependencies
+RUN /usr/bin/python3 -m pip install python-dotenv pyinputplus jpl-rosa rich langchain langchain-ollama requests --break-system-packages
+
 # ============================================================
-# REMEMBR + VILA installation (inside same venv)
+# NEW REMEMBR + VILA installation (inside global python env)
 # ============================================================
 WORKDIR /app/remembr
 
-# Install REMEMBR base (editable)
-RUN /opt/venv/csagent/bin/pip install -e .
+# NEW (Using system pip, usually aliased as pip3 or via python3 -m pip) we install remembr in the core python env used by ROS2
+RUN /usr/bin/python3 -m pip install -e . --break-system-packages
 
 # Create deps and install VILA + flash-attn wheel (adjust wheel URL if needed)
 RUN mkdir -p deps && cd deps && \
     git clone https://github.com/NVlabs/VILA.git && \
     cd VILA && \
-    /opt/venv/csagent/bin/pip install --no-cache-dir https://github.com/Dao-AILab/flash-attention/releases/download/v2.5.8/flash_attn-2.5.8+cu122torch2.3cxx11abiFALSE-cp310-cp310-linux_x86_64.whl || true && \
-    /opt/venv/csagent/bin/pip install -e . && \
-   /opt/venv/csagent/bin/pip install -e ".[train]" && \
-    /opt/venv/csagent/bin/pip install -e ".[eval]" && \
-    /opt/venv/csagent/bin/pip install -U "transformers==4.46.0"
+    /usr/bin/python3 -m pip install --no-cache-dir --break-system-packages https://github.com/Dao-AILab/flash-attention/releases/download/v2.5.8/flash_attn-2.5.8+cu122torch2.3cxx11abiFALSE-cp310-cp310-linux_x86_64.whl || true && \
+    /usr/bin/python3 -m pip install -e . --break-system-packages && \
+    /usr/bin/python3 -m pip install -e ".[train]" --break-system-packages && \
+    /usr/bin/python3 -m pip install -e ".[eval]" --break-system-packages && \
+    /usr/bin/python3 -m pip install -U "transformers==4.46.0" --break-system-packages
 
 # REMEMBR extra requirements (pin transformers once, avoid conflicting downgrades)
 WORKDIR /app/remembr
-RUN /opt/venv/csagent/bin/pip install -r requirements.txt --no-cache-dir && \
-    /opt/venv/csagent/bin/pip install --no-cache-dir "transformers==4.43.3" "peft==0.11.1" "sentence-transformers==2.7.0" && \
+RUN /usr/bin/python3 -m pip install -r requirements.txt --no-cache-dir --break-system-packages && \
+    /usr/bin/python3 -m pip install --no-cache-dir "transformers==4.46.0" "peft==0.11.1" "sentence-transformers==2.7.0" --break-system-packages && \
     /opt/venv/csagent/bin/pip install --no-cache-dir flask
+
+
+# ============================================================
+# OLD REMEMBR + VILA installation (inside same venv)
+# ============================================================
+#WORKDIR /app/remembr
+#
+# Install REMEMBR base (editable)
+#RUN /opt/venv/csagent/bin/pip install -e .
+#
+# Create deps and install VILA + flash-attn wheel (adjust wheel URL if needed)
+#RUN mkdir -p deps && cd deps && \
+#    git clone https://github.com/NVlabs/VILA.git && \
+#    cd VILA && \
+#    /opt/venv/csagent/bin/pip install --no-cache-dir https://github.com/Dao-AILab/flash-attention/releases/download/v2.5.8/flash_attn-2.5.8+cu122torch2.3cxx11abiFALSE-cp310-cp310-linux_x86_64.whl || true && \
+#    /opt/venv/csagent/bin/pip install -e . && \
+#    /opt/venv/csagent/bin/pip install -e ".[train]" && \
+#    /opt/venv/csagent/bin/pip install -e ".[eval]" && \
+#    /opt/venv/csagent/bin/pip install -U "transformers==4.46.0"
+#
+# REMEMBR extra requirements (pin transformers once, avoid conflicting downgrades)
+#WORKDIR /app/remembr
+#RUN /opt/venv/csagent/bin/pip install -r requirements.txt --no-cache-dir && \
+#    /opt/venv/csagent/bin/pip install --no-cache-dir "transformers==4.43.3" "peft==0.11.1" "sentence-transformers==2.7.0" && \
+#    /opt/venv/csagent/bin/pip install --no-cache-dir flask
+
+
 
 # ============================================================
 # Helper script to activate the venv in a running container

@@ -15,6 +15,14 @@
   <exec_depend>python3-rich</exec_depend>
   <exec_depend>python3-dotenv</exec_depend>
   <exec_depend>python3-requests</exec_depend>
+  <!-- Added runtime dependencies required by captioner and memory builder -->
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>cv_bridge</exec_depend>
+  <exec_depend>python3-numpy</exec_depend>
+  <exec_depend>python3-pil</exec_depend>
+  <exec_depend>python3-scipy</exec_depend>
+  <exec_depend>python3-opencv</exec_depend>
+  <!-- Note: `nano_llm` is typically a pip package; add to pyproject/requirements if needed -->
 
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>

@@ -21,14 +21,16 @@ setup(
     ],
     install_requires=['setuptools'],
     zip_safe=True,
-    maintainer='User',
-    maintainer_email='user@todo.todo',
+    maintainer='Paolo Riva',
+    maintainer_email='paolo13.riva@mail.polimi.it',
     description='LLM Agent for Waffle Robot',
     license='Apache-2.0',
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
             'agent = waffle_agent.waffle_agent:main',
+            'captioner_node = waffle_agent.captioner_node:main', ###
+            'memory_builder_node = waffle_agent.memory_builder_node:main', ###
         ],
     },
 )

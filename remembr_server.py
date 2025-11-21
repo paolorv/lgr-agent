@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+### !!! TO RUN IN THE VENV WITH FLASK INSTALLED
 from flask import Flask, request, jsonify
 from remembr.agents.remembr_agent import ReMEmbRAgent
 from remembr.memory.milvus_memory import MilvusMemory
