@@ -84,7 +84,7 @@ ENV COLCON_DEFAULTS_FILE=/root/colcon_defaults.yaml
 # Update root bashrc: source ros2 & venv and provide start alias
 RUN echo "source /opt/ros/jazzy/setup.bash" >> /root/.bashrc && \
     echo "source /opt/venv/csagent/bin/activate" >> /root/.bashrc && \
-    echo "alias start='colcon build --base-paths src --symlink-install --packages-select waffle_agent && source install/setup.bash && ros2 launch waffle_agent agent.launch.py'" >> /root/.bashrc && \
+    echo "alias start='colcon build --base-paths src --symlink-install --packages-select waffle_agent && source install/setup.bash && ros2 run waffle_agent agent --ros-args -p streaming:=False'" >> /root/.bashrc && \
     #echo "alias start='catkin build && source devel/setup.bash && roslaunch waffle_agent agent.launch'" >> /root/.bashrc && \
     echo "export TURTLEBOT3_MODEL=${TURTLEBOT3_MODEL}" >> /root/.bashrc && \
     echo "export COLCON_DEFAULTS_FILE=${COLCON_DEFAULTS_FILE}" >> /root/.bashrc
@@ -117,26 +117,26 @@ RUN /bin/bash -lc '\
 # ============================================================
 # REMEMBR + VILA installation (inside same venv)
 # ============================================================
-#WORKDIR /app/remembr
+WORKDIR /app/remembr
 
 # Install REMEMBR base (editable)
-#RUN /opt/venv/csagent/bin/pip install -e .
+RUN /opt/venv/csagent/bin/pip install -e .
 
 # Create deps and install VILA + flash-attn wheel (adjust wheel URL if needed)
-#RUN mkdir -p deps && cd deps && \
-#    git clone https://github.com/NVlabs/VILA.git && \
-#    cd VILA && \
-#    /opt/venv/csagent/bin/pip install --no-cache-dir https://github.com/Dao-AILab/flash-attention/releases/download/v2.5.8/flash_attn-2.5.8+cu122torch2.3cxx11abiFALSE-cp310-cp310-linux_x86_64.whl || true && \
-#    /opt/venv/csagent/bin/pip install -e . && \
-#    /opt/venv/csagent/bin/pip install -e ".[train]" && \
-#    /opt/venv/csagent/bin/pip install -e ".[eval]" && \
-#    /opt/venv/csagent/bin/pip install -U "transformers==4.46.0"
+RUN mkdir -p deps && cd deps && \
+    git clone https://github.com/NVlabs/VILA.git && \
+    cd VILA && \
+    /opt/venv/csagent/bin/pip install --no-cache-dir https://github.com/Dao-AILab/flash-attention/releases/download/v2.5.8/flash_attn-2.5.8+cu122torch2.3cxx11abiFALSE-cp310-cp310-linux_x86_64.whl || true && \
+    /opt/venv/csagent/bin/pip install -e . && \
+   /opt/venv/csagent/bin/pip install -e ".[train]" && \
+    /opt/venv/csagent/bin/pip install -e ".[eval]" && \
+    /opt/venv/csagent/bin/pip install -U "transformers==4.46.0"
 
 # REMEMBR extra requirements (pin transformers once, avoid conflicting downgrades)
-#WORKDIR /app/remembr
-#RUN /opt/venv/csagent/bin/pip install -r requirements.txt --no-cache-dir && \
-#    /opt/venv/csagent/bin/pip install --no-cache-dir "transformers==4.46.0" "peft==0.11.1" "sentence-transformers==2.7.0" && \
-#    /opt/venv/csagent/bin/pip install --no-cache-dir flask
+WORKDIR /app/remembr
+RUN /opt/venv/csagent/bin/pip install -r requirements.txt --no-cache-dir && \
+    /opt/venv/csagent/bin/pip install --no-cache-dir "transformers==4.43.3" "peft==0.11.1" "sentence-transformers==2.7.0" && \
+    /opt/venv/csagent/bin/pip install --no-cache-dir flask
 
 # ============================================================
 # Helper script to activate the venv in a running container
