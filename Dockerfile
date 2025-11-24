@@ -51,7 +51,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     x11-apps xvfb \
     # Development tools
     cargo rustc tmux git nano docker.io \
-    python3-pip python3-empy python3-defusedxml python3-colcon-common-extensions \
+    python3-pip python3-empy python3-defusedxml python3-colcon-common-extensions python3-flask \
     build-essential \
  && rm -rf /var/lib/apt/lists/*
 
@@ -61,6 +61,29 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 ENV NVIDIA_VISIBLE_DEVICES=all
 ENV NVIDIA_DRIVER_CAPABILITIES=all
 ENV __GLX_VENDOR_LIBRARY_NAME=nvidia
+
+
+
+# ============================================================
+# CUDA TOOLKIT INSTALL (CHECK VERSION) TO TEST
+# ============================================================
+# Make CUDA configurable and expose common CUDA env vars
+ARG CUDA_VERSION=12.2
+ARG CUDA_HOME=/usr/local/cuda-12.2
+ENV CUDA_HOME=${CUDA_HOME}
+ENV PATH=${CUDA_HOME}/bin:${PATH}
+ENV LD_LIBRARY_PATH=${CUDA_HOME}/lib64:${LD_LIBRARY_PATH}
+
+# Install CUDA Toolkit 12.2 (adds NVIDIA apt keyring via wget then installs package)
+# Note: this installs the toolkit inside the image so `nvcc` is available.
+RUN set -eux; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends wget ca-certificates gnupg; \
+    wget -qO /tmp/cuda-keyring.deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/cuda-keyring_1.0-1_all.deb; \
+    dpkg -i /tmp/cuda-keyring.deb; \
+    apt-get update; \
+    apt-get -y install --no-install-recommends cuda-toolkit-12-2; \
+    rm -rf /var/lib/apt/lists/* /tmp/cuda-keyring.deb
 
 # ============================================================
 # Create single Python 3.10 venv used by ROSA + REMEMBR
@@ -140,20 +163,20 @@ WORKDIR /app/remembr
 RUN /usr/bin/python3 -m pip install -e . --break-system-packages
 
 # Create deps and install VILA + flash-attn wheel (adjust wheel URL if needed)
-RUN mkdir -p deps && cd deps && \
-    git clone https://github.com/NVlabs/VILA.git && \
-    cd VILA && \
-    /usr/bin/python3 -m pip install --no-cache-dir --break-system-packages https://github.com/Dao-AILab/flash-attention/releases/download/v2.5.8/flash_attn-2.5.8+cu122torch2.3cxx11abiFALSE-cp310-cp310-linux_x86_64.whl || true && \
-    /usr/bin/python3 -m pip install -e . --break-system-packages && \
-    /usr/bin/python3 -m pip install -e ".[train]" --break-system-packages && \
-    /usr/bin/python3 -m pip install -e ".[eval]" --break-system-packages && \
-    /usr/bin/python3 -m pip install -U "transformers==4.46.0" --break-system-packages
+#RUN mkdir -p deps && cd deps && \
+#    git clone https://github.com/NVlabs/VILA.git && \
+#    cd VILA && \
+#    /usr/bin/python3 -m pip install --no-cache-dir --break-system-packages https://github.com/Dao-AILab/flash-attention/releases/download/v2.5.8/flash_attn-2.5.8+cu122torch2.3cxx11abiFALSE-cp310-cp310-linux_x86_64.whl || true && \
+#    /usr/bin/python3 -m pip install -e . --break-system-packages && \
+#    /usr/bin/python3 -m pip install -e ".[train]" --break-system-packages && \
+#    /usr/bin/python3 -m pip install -e ".[eval]" --break-system-packages && \
+#    /usr/bin/python3 -m pip install -U "transformers==4.46.0" --break-system-packages
 
 # REMEMBR extra requirements (pin transformers once, avoid conflicting downgrades)
 WORKDIR /app/remembr
 RUN /usr/bin/python3 -m pip install -r requirements.txt --no-cache-dir --break-system-packages && \
-    /usr/bin/python3 -m pip install --no-cache-dir "transformers==4.46.0" "peft==0.11.1" "sentence-transformers==2.7.0" --break-system-packages && \
-    /opt/venv/csagent/bin/pip install --no-cache-dir flask
+    /usr/bin/python3 -m pip install --no-cache-dir "transformers==4.46.0" "peft==0.11.1" "sentence-transformers==2.7.0" --break-system-packages
+#    /opt/venv/csagent/bin/pip install --no-cache-dir flask
 
 
 # ============================================================
@@ -198,3 +221,24 @@ CMD ["/bin/bash", "-c", "source /opt/ros/jazzy/setup.bash && source /opt/venv/cs
 #### FIXING VILA
 #https://github.com/mjun0812/flash-attention-prebuild-wheels/blob/main/docs/packages.md#flash-attention-259
 #"ps3-torch"
+
+##### INSTALL FLASH_ATTN AFTER WORKING CUDA 12.2 ##### FOR VILA INSTALLATION
+# 1. Clone the repo and check out the correct tag
+#git clone https://github.com/Dao-AILab/flash-attention.git
+#cd flash-attention
+#git checkout tags/v2.5.8
+
+# 2. Initialize submodules (CUTLASS is used)
+#git submodule update --init --recursive
+
+# 3. Install build dependencies in your Python env
+# Make sure you're using your Python 3.12 virtualenv / venv
+#/usr/bin/python3 -m pip install packaging ninja psutil --break-system-packages
+
+# 4. Set env vars and build
+# Use MAX_JOBS to limit parallelism if needed.
+# FLASH_ATTENTION_FORCE_BUILD ensures CUDA extensions are built
+#export MAX_JOBS=4  
+#export FLASH_ATTENTION_FORCE_BUILD=TRUE  
+#export CUDA_HOME=/usr/local/cuda-12   # adapt to your cuda install  
+#/usr/bin/python3 setup.py bdist_wheel
