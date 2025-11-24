@@ -192,3 +192,9 @@ RUN echo '#!/bin/bash\nsource /opt/venv/csagent/bin/activate' > /app/use_csagent
 WORKDIR /app
 CMD ["/bin/bash", "-c", "source /opt/ros/jazzy/setup.bash && source /opt/venv/csagent/bin/activate && echo 'ROSA+REMEMBR environment ready on ROS2 Jazzy with Python 3.12' && echo 'Run runwaffletester.sh to launch the Gazebo test environment, then run `start` to build and launch the rosa_waffle_bot controller.' && /bin/bash"]
 
+
+
+
+#### FIXING VILA
+#https://github.com/mjun0812/flash-attention-prebuild-wheels/blob/main/docs/packages.md#flash-attention-259
+#"ps3-torch"

@@ -161,3 +161,16 @@ def main(args=None):
 
 if __name__ == '__main__':
     main()
+
+
+
+
+
+
+
+
+vila-infer \
+    --model-path Efficient-Large-Model/VILA1.5-3b \
+    --conv-mode vicuna_v1 \
+    --text "Please describe the image" \
+    --media /app/sources/images.jpeg
