@@ -52,7 +52,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     # Development tools
     cargo rustc tmux git nano docker.io \
     python3-pip python3-empy python3-defusedxml python3-colcon-common-extensions python3-flask \
-    build-essential \
+    build-essential wget curl \
  && rm -rf /var/lib/apt/lists/*
 
 # ============================================================
@@ -65,25 +65,19 @@ ENV __GLX_VENDOR_LIBRARY_NAME=nvidia
 
 
 # ============================================================
-# CUDA TOOLKIT INSTALL (CHECK VERSION) TO TEST
+# CUDA TOOLKIT INSTALL (Adjust version as needed!!!)
 # ============================================================
-# Make CUDA configurable and expose common CUDA env vars
-ARG CUDA_VERSION=12.2
-ARG CUDA_HOME=/usr/local/cuda-12.2
-ENV CUDA_HOME=${CUDA_HOME}
-ENV PATH=${CUDA_HOME}/bin:${PATH}
-ENV LD_LIBRARY_PATH=${CUDA_HOME}/lib64:${LD_LIBRARY_PATH}
+# Define versions for easy updates
+ARG CUDA_MAJOR_VERSION=13
+ARG CUDA_MINOR_VERSION=0
+# The apt package usually follows the format cuda-toolkit-X-Y
+ARG CUDA_PKG_VERSION=${CUDA_MAJOR_VERSION}-${CUDA_MINOR_VERSION}
 
-# Install CUDA Toolkit 12.2 (adds NVIDIA apt keyring via wget then installs package)
-# Note: this installs the toolkit inside the image so `nvcc` is available.
-RUN set -eux; \
-    apt-get update; \
-    apt-get install -y --no-install-recommends wget ca-certificates gnupg; \
-    wget -qO /tmp/cuda-keyring.deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/cuda-keyring_1.0-1_all.deb; \
-    dpkg -i /tmp/cuda-keyring.deb; \
-    apt-get update; \
-    apt-get -y install --no-install-recommends cuda-toolkit-12-2; \
-    rm -rf /var/lib/apt/lists/* /tmp/cuda-keyring.deb
+RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/cuda-keyring_1.1-1_all.deb && \
+    sudo dpkg -i cuda-keyring_1.1-1_all.deb && \
+    sudo apt-get update && \
+    sudo apt-get -y install cuda-toolkit-${CUDA_PKG_VERSION}
+### Chjeck sintax
 
 # ============================================================
 # Create single Python 3.10 venv used by ROSA + REMEMBR
@@ -242,3 +236,14 @@ CMD ["/bin/bash", "-c", "source /opt/ros/jazzy/setup.bash && source /opt/venv/cs
 #export FLASH_ATTENTION_FORCE_BUILD=TRUE  
 #export CUDA_HOME=/usr/local/cuda-12   # adapt to your cuda install  
 #/usr/bin/python3 setup.py bdist_wheel
+
+
+
+
+#    Uninstalling nvidia-cudnn-cu12-9.10.2.21:
+#      Successfully uninstalled nvidia-cudnn-cu12-9.10.2.21
+#  Attempting uninstall: torch
+#    Found existing installation: torch 2.9.1
+#    Uninstalling torch-2.9.1:
+#      Successfully uninstalled torch-2.9.1
+#Successfully installed nvidia-cublas-cu12-12.1.3.1 nvidia-cuda-cupti-cu12-12.1.105 nvidia-cuda-nvrtc-cu12-12.1.105 nvidia-cuda-runtime-cu12-12.1.105 nvidia-cudnn-cu12-8.9.2.26 nvidia-cufft-cu12-11.0.2.54 nvidia-curand-cu12-10.3.2.106 nvidia-cusolver-cu12-11.4.5.107 nvidia-cusparse-cu12-12.1.0.106 nvidia-nccl-cu12-2.20.5 nvidia-nvtx-cu12-12.1.105 torch-2.3.0
