@@ -8,6 +8,11 @@ setup(
     name=package_name,
     version='0.0.1',
     packages=[package_name, f'{package_name}.tools'],
+    # Map the package name to the actual directory location
+    package_dir={
+        package_name: 'scripts',
+        f'{package_name}.tools': 'scripts/tools'
+    },
     data_files=[
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
@@ -20,16 +25,12 @@ setup(
     maintainer_email='paolo13.riva@mail.polimi.it',
     description='LLM Agent for Waffle Robot',
     license='Apache-2.0',
-    # CHANGED: tests_require is deprecated. Use extras_require for tests.
-    extras_require={
-        'test': ['pytest'],
-    },
+    tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            # Ensure these paths exist: waffle_agent/waffle_agent.py -> main()
             'agent = waffle_agent.waffle_agent:main',
-            'captioner_node = waffle_agent.captioner_node:main', 
-            'memory_builder_node = waffle_agent.memory_builder_node:main', 
+            'captioner_node = waffle_agent.captioner_node:main', ###
+            'memory_builder_node = waffle_agent.memory_builder_node:main', ###
         ],
     },
 )

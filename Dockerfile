@@ -65,19 +65,19 @@ ENV __GLX_VENDOR_LIBRARY_NAME=nvidia
 
 
 # ============================================================
-# CUDA TOOLKIT INSTALL (Adjust version as needed!!!)
+# CUDA TOOLKIT INSTALL
 # ============================================================
 # Define versions for easy updates
-ARG CUDA_MAJOR_VERSION=13
-ARG CUDA_MINOR_VERSION=0
+#ARG CUDA_MAJOR_VERSION=13
+#ARG CUDA_MINOR_VERSION=0
 # The apt package usually follows the format cuda-toolkit-X-Y
-ARG CUDA_PKG_VERSION=${CUDA_MAJOR_VERSION}-${CUDA_MINOR_VERSION}
+#ARG CUDA_PKG_VERSION=${CUDA_MAJOR_VERSION}-${CUDA_MINOR_VERSION}
 
-RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/cuda-keyring_1.1-1_all.deb && \
-    sudo dpkg -i cuda-keyring_1.1-1_all.deb && \
-    sudo apt-get update && \
-    sudo apt-get -y install cuda-toolkit-${CUDA_PKG_VERSION}
-### Chjeck sintax
+#RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/cuda-keyring_1.1-1_all.deb && \
+#    sudo dpkg -i cuda-keyring_1.1-1_all.deb && \
+#    sudo apt-get update && \
+#    sudo apt-get -y install cuda-toolkit-${CUDA_PKG_VERSION}
+### Check sintax
 
 # ============================================================
 # Create single Python 3.10 venv used by ROSA + REMEMBR
@@ -171,6 +171,10 @@ WORKDIR /app/remembr
 RUN /usr/bin/python3 -m pip install -r requirements.txt --no-cache-dir --break-system-packages && \
     /usr/bin/python3 -m pip install --no-cache-dir "transformers==4.46.0" "peft==0.11.1" "sentence-transformers==2.7.0" --break-system-packages
 #    /opt/venv/csagent/bin/pip install --no-cache-dir flask
+
+### ADDITIONAL FIXES
+RUN /usr/bin/python3 -m pip install "setuptools==79.0.0" --break-system-packages
+RUN /usr/bin/python3 -m pip install -U langchain-core langchain-ollama langchain python-dotenv pyinputplus jpl-rosa rich requests --break-system-packages
 
 
 # ============================================================
