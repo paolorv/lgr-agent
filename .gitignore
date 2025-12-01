@@ -7,5 +7,5 @@ __pycache__/
 docs
 .DS_Store
 .env
-milvusconfig/volumes/milvus
+milvusserver/volumes/milvus
 pushtoorigin.sh

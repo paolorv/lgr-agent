@@ -1,66 +1,132 @@
 import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import Image
+from std_msgs.msg import String
 from cv_bridge import CvBridge
 import cv2
-import base64
 import requests
 import time
+
 
 class VILACaptionerClient(Node):
     def __init__(self):
         super().__init__('vila_captioner_client')
         self.bridge = CvBridge()
-        self.sub = self.create_subscription(Image, '/camera/image_raw', self.img_callback, 10)
         
-        # Point this to your VILA container IP
-        # If running on same machine, use "localhost" or "host.docker.internal"
-        self.api_url = "http://localhost:8001/v1/chat/completions"
-        self.get_logger().info("VILA Client Node Started. Waiting for images...")
+        # Latest available frame
+        self.latest_cv_img = None
+        self.latest_pos= None
+        self.latest_time = None
 
-    def encode_image(self, cv_img):
-        """Encodes OpenCV image to Base64 string"""
-        _, buffer = cv2.imencode('.jpg', cv_img)
-        return base64.b64encode(buffer).decode('utf-8')
+        # CAPTION PUBLISHER
+        self.publisher_ = self.create_publisher(String, '/captions', 10)
+
+        # FRAME SUBSCRIPTION
+        self.sub = self.create_subscription(
+            Image, 
+            '/camera/image_raw', 
+            self.img_callback, 
+            10
+        )
+
+        # POSITION SUBSCRIPTION
+        #self.sub = self.create_subscription(
+        #    Image, 
+        #    '/odom', 
+        #    self.pos_callback, 
+        #    10
+        #)
+
+        # TIME SUBSCRIPTION
+        #self.sub = self.create_subscription(
+        #    Image, 
+        #    '/clock', 
+        #    self.time_callback, 
+        #    10
+        #)
+        
+        # PROCESS MEMORY ITEM EVERY N SECONDS --> Callback posts to the memory server
+        self.process_timer = self.create_timer(7.0, self.timer_callback)
+
+        self.api_url = "http://localhost:8001/caption"
+        self.get_logger().info("VILA Client Started. Sending multipart/form-data requests...")
 
     def img_callback(self, msg):
+        """Keep latest available frame."""
         try:
-            cv_img = self.bridge.imgmsg_to_cv2(msg, "bgr8")
-            b64_image = self.encode_image(cv_img)
+            self.latest_cv_img = self.bridge.imgmsg_to_cv2(msg, "bgr8")
+        except Exception as e:
+            self.get_logger().error(f"Frame conversion error: {e}")
 
-            payload = {
-                "model": "Efficient-Large-Model/VILA1.5-3b",
-                "messages": [
-                    {
-                        "role": "user",
-                        "content": [
-                            {"type": "text", "text": "Describe this image in detail."},
-                            {
-                                "type": "image_url",
-                                "image_url": {"url": f"data:image/jpeg;base64,{b64_image}"}
-                            }
-                        ]
-                    }
-                ],
-                "max_tokens": 100
+    #def pos_callback(self, msg):
+    #    """Keep latest available frame."""
+    #    try:
+    #        self.latest_cv_img = msg.pose.pose.position
+    #    except Exception as e:
+    #        self.get_logger().error(f"Frame conversion error: {e}")
+
+    #def time_callback(self, msg):
+    #    """Keep latest available frame."""
+    #    try:
+     #       self.latest_cv_img = msg
+     #   except Exception as e:
+     #       self.get_logger().error(f"Frame conversion error: {e}")
+
+
+
+
+
+    def timer_callback(self):
+        """Encodes image to bytes and uploads via multipart/form-data."""
+        if self.latest_cv_img is None:
+            return
+
+        try:
+            cv_img = self.latest_cv_img
+            self.latest_cv_img = None # Prevent re-sending same frame if camera dies
+
+            # 1. Encode to JPEG buffer
+            _, buffer = cv2.imencode('.jpg', cv_img)
+            
+            # 2. Get raw bytes (no Base64 encoding needed!)
+            img_bytes = buffer.tobytes()
+
+            # 3. Prepare the Multipart payload
+            # 'file': (filename, file_bytes, mime_type)
+            files = {
+                'file': ('camera_frame.jpg', img_bytes, 'image/jpeg')
+            }
+            
+            # 4. Optional form fields
+            data = {
+                'task': '<MORE_DETAILED_CAPTION>'
+                #'task': 'Describe the image, focusing on key elements and objects.'
+                #'task': 'Describe the image, focusing on key elements and objects and their distance compared to your perspective.'
             }
 
-            self.get_logger().info("Sending request to VILA...")
-            
-            # Send HTTP POST
+            self.get_logger().info("Sending image to server...")
             start = time.time()
-            response = requests.post(self.api_url, json=payload)
+            
+            # 5. Send POST using 'files=' parameter
+            response = requests.post(self.api_url, files=files, data=data)
             latency = time.time() - start
 
             if response.status_code == 200:
-                result = response.json()
-                caption = result['choices'][0]['message']['content']
-                self.get_logger().info(f"Ref: {latency:.2f}s | VILA: {caption}")
+                # 6. Parse result based on your server's return: {"task":..., "result":...}
+                response_data = response.json()
+                raw_caption = response_data.get('result', 'No caption found')
+                caption_msg = String() # Wrap in ROS2 String message
+                caption_msg.data = raw_caption
+                self.get_logger().info(f"Ref: {latency:.2f}s | Result: {raw_caption}")
+
+                # PUBLISH CAPTION
+                self.publisher_.publish(caption_msg)
+                self.get_logger().info(f'POSTED TO /captions TOPIC')
             else:
-                self.get_logger().error(f"Error {response.status_code}: {response.text}")
+                self.get_logger().error(f"Server Error {response.status_code}: {response.text}")
 
         except Exception as e:
-            self.get_logger().error(f"Failed to process image: {e}")
+            self.get_logger().error(f"Request failed: {e}")
 
 def main():
     rclpy.init()

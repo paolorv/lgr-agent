@@ -14,8 +14,11 @@ bash milvus_patch.sh start
 Otherwise:
 git clone https://github.com/NVlabs/VILA.git
 cd VILA
+
+----> COPY THE CORRECTED Dockerfile AND environment_setup.sh inside the folder
+
 docker build -t vila-server:latest .
-docker run --gpus all --ipc=host --ulimit memlock=-1 --ulimit stack=67108864     -v ./hub:/root/.cache/huggingface/hub     -it --rm -p 8000:8000     -e VILA_MODEL_PATH=Efficient-Large-Model/NVILA-3B     -e VILA_CONV_MODE=auto     vila-server:latest
+docker run --gpus all --ipc=host --ulimit memlock=-1 --ulimit stack=67108864     -v ./hub:/root/.cache/huggingface/hub     -it --rm -p 8000:8000     -e VILA_MODEL_PATH=Efficient-Large-Model/NVILA-15B     -e VILA_CONV_MODE=auto     vila-server:latest
 
 
 ## Once inside rosa-ltm

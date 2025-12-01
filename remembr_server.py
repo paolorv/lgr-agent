@@ -9,33 +9,33 @@ app = Flask(__name__)
 
 # Initialize memory + agent
 memory = MilvusMemory("test_collection", db_ip="127.0.0.1", db_port=19530)
-memory.reset()
+#memory.reset()
 
-memory_item = MemoryItem(
-    caption="I see a desk", 
-    time=1.1, 
-    position=[-6.0, 2.0, 0.0], 
-    theta=3.14
-)
-memory.insert(memory_item)
+#memory_item = MemoryItem(
+#    caption="I see a desk", 
+#    time=1.1, 
+#    position=[-6.0, 2.0, 0.0], 
+#    theta=3.14
+#)
+#memory.insert(memory_item)
 
-memory_item = MemoryItem(
-    caption="I see a big fridge", 
-    time=1.1, 
-    position=[7.64, -1.07, 0.0], 
-    theta=3.14
-)
-memory.insert(memory_item)
+#memory_item = MemoryItem(
+#    caption="I see a big fridge", 
+#    time=1.1, 
+#    position=[7.64, -1.07, 0.0], 
+#    theta=3.14
+#)
+#memory.insert(memory_item)
 
-memory_item = MemoryItem(
-    caption="I see a nice window looking outside", 
-    time=1.1, 
-    position=[9.0, 2.0, 0.0], 
-    theta=3.14
-)
-memory.insert(memory_item)
+#memory_item = MemoryItem(
+#    caption="I see a nice window looking outside", 
+#    time=1.1, 
+#    position=[9.0, 2.0, 0.0], 
+#    theta=3.14
+#)
+#memory.insert(memory_item)
 
-print("MEMORY BUILD SUCCESS.")
+print("MEMORY INITIALIZATION SUCCESS.")
 
 ltm_agent = ReMEmbRAgent(llm_type="gpt-4")
 ltm_agent.set_memory(memory)
