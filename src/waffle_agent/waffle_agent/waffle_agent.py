@@ -197,17 +197,46 @@ class TurtleAgent(ROSA):
 
 
 
+### Logging with Timestamps
+#def setup_logging():
+#    # Create a logs directory if it doesn't exist
+#    log_folder = 'logs'
+#    os.makedirs(log_folder, exist_ok=True) #
 
+    # Set timestamp
+#    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+#    log_filename = f"interaction_{timestamp}.log"
+#    full_log_path = os.path.join(log_folder, log_filename)
+
+#    logging.basicConfig(
+#        filename=full_log_path,
+#        filemode='a',      # Append mode
+#        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+#        level=logging.INFO
+#    )
+    
+#    print(f"Logging initialized. Saving to: {full_log_path}")
+
+### Incremental Log File Naming
 def setup_logging():
     # Create a logs directory if it doesn't exist
     log_folder = 'logs'
     os.makedirs(log_folder, exist_ok=True) 
 
-    # Set timestamp
-    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    log_filename = f"interaction_{timestamp}.log"
-    full_log_path = os.path.join(log_folder, log_filename)
+    # Find the next available incremental log file
+    log_counter = 1
+    while True:
+        log_filename = f"ROSAinteraction_{log_counter}.log"
+        full_log_path = os.path.join(log_folder, log_filename)
+        
+        # If file doesn't exist, we found our number. Break the loop.
+        if not os.path.exists(full_log_path):
+            break
+            
+        # Otherwise, check the next number
+        log_counter += 1
 
+    # Configure logging
     logging.basicConfig(
         filename=full_log_path,
         filemode='a',      # Append mode
@@ -216,6 +245,9 @@ def setup_logging():
     )
     
     print(f"Logging initialized. Saving to: {full_log_path}")
+    
+    # Return the path so we can send it to the Flask server later
+    return full_log_path
 
 
 def main(args=None):

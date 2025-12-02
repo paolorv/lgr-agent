@@ -94,6 +94,37 @@ def try_except_continue(state, func):
             traceback.print_exception(*sys.exc_info())
             continue
 
+def setup_logging():
+# Create a logs directory if it doesn't exist
+    log_folder = 'logs'
+    os.makedirs(log_folder, exist_ok=True) 
+
+    # Find the next available incremental log file
+    log_counter = 1
+    while True:
+        log_filename = f"REMEMBRinteraction_{log_counter}.log"
+        full_log_path = os.path.join(log_folder, log_filename)
+        
+        # If file doesn't exist, we found our number. Break the loop.
+        if not os.path.exists(full_log_path):
+            break
+            
+        # Otherwise, check the next number
+        log_counter += 1
+
+    # Configure logging
+    logging.basicConfig(
+        filename=full_log_path,
+        filemode='a',      # Append mode
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        level=logging.INFO
+    )
+
+    print(f"Logging initialized. Saving to: {full_log_path}")
+    
+    # Return the path so we can send it to the Flask server later
+    return full_log_path
+
 class ReMEmbRAgent(Agent):
 
     def __init__(self, llm_type='gpt-4o', num_ctx=8192, temperature=0):
@@ -220,8 +251,7 @@ class ReMEmbRAgent(Agent):
     
     def create_tools(self, memory):
         # Get the logger for this file
-        print("STARTING TOOOOOOOOOOOOOOOOOOL CREATION")
-        
+        setup_logging()
         logger = logging.getLogger(__name__)
 
         # --- (Same as before) ---
@@ -252,7 +282,6 @@ class ReMEmbRAgent(Agent):
 
         def run_text_search(x):
             # [LOG POINT 1] Log the query 
-            logger = logging.getLogger(__name__)
             logger.info(f"[REMEMBR Text Search] Agent is asking for: {x}")
             
             # Run the search
@@ -266,7 +295,6 @@ class ReMEmbRAgent(Agent):
 
         def run_position_search(x):
             # [LOG POINT 1] Log the query
-            logger = logging.getLogger(__name__)
             logger.info(f"[Pos Search] Agent is asking for coordinates: {x}")
             
             # Run the search
@@ -280,7 +308,6 @@ class ReMEmbRAgent(Agent):
 
         def run_time_search(x):
             # [LOG POINT 1] Log the query
-            logger = logging.getLogger(__name__)
             logger.info(f"[REMEMBR Time Search] Agent is asking for time: {x}")
             
             # Run the search
