@@ -1,0 +1,22 @@
+2025-12-02 22:59:43,583 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8000
+ * Running on http://192.168.2.201:8000
+2025-12-02 22:59:43,584 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-12-02 23:00:16,913 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-02 23:00:16,930 - remembr.agents.remembr_agent - INFO - [REMEMBR Text Search] Agent is asking for: green trash can
+2025-12-02 23:00:17,430 - remembr.agents.remembr_agent - INFO - [REMEMBR Text Search] Database returned 2759 results.
+2025-12-02 23:00:17,430 - remembr.agents.remembr_agent - INFO - [REMEMBR Text Search] Content: At time=1970-01-01 00:03:52, the robot was at an average position of [1.241, 1.567, 0.0].The robot saw the following: The image is a 3D rendering of an empty room with a green trash can in the center. The room has a wooden floor and a large window on the right side, allowing natural light to enter. On the left side, there is a bookshelf with books of different sizes and colors. The walls are made of wood and the floor is made of concrete. The overall color scheme of the room is warm and inviting.
+
+At time=1970-01-01 00:03:52, the robot was at an average position of [1.241, 1.567, 0.0].The robot saw the following: The image is a 3D rendering of an empty room with a green trash can in the center. The room has a wooden floor and a large window on the right side, allowing natural light to enter. On the left side of the room, there is a bookshelf with books neatly arranged on it. The walls are made of wood and the floor is made of concrete. The overall color scheme of the image is neutral, with a mix of light and dark tones.
+
+At time=1970-01-01 00:03:52, the robot was at an average position of [1.241, 1.567, 0.0].The robot saw the following: The image is a 3D rendering of an empty room with a green trash can in the center. The room has a wooden floor and a large window on the right side, allowing natural light to enter. On the left side of the room, there is a bookshelf with books neatly arranged on it. The walls are made of wood and the floor is made of concrete. The overall color scheme of the image is neutral, with a mix of light and dark tones.
+
+At time=1970-01-01 00:03:52, the robot was at an average position of [1.438, 1.239, 0.0].The robot saw the following: The image is a 3D rendering of an empty room with a green trash can in the center. The room has wooden walls and a large window on the right side, allowing natural light to enter. On the left side, there is a wooden shelf with various items on it. The floor is made of concrete and the walls are painted in a light brown color. The ceiling is made up of wooden beams and there are several columns supporting the space. The overall atmosphere of the room is minimalistic and modern.
+
+At time=1970-01-01 00:01:44, the robot was at an average position of [2.353, -2.74, 0.0].The robot saw the following: The image shows a 3D rendering of a brick wall with two wooden doors on either side. The doors are made of wood and have a dark brown finish. On the left side of the image, there is a wooden door with a rectangular shape and a smooth surface. Next to the door, there are two wooden panels with a blue stripe running along the top. In the center of the wall, there appears to be a black pole with a sign that reads "U.S. Mail". The background is a plain white surface.
+
+
+2025-12-02 23:00:20,985 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-02 23:00:23,830 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-02 23:00:23,844 - werkzeug - INFO - 127.0.0.1 - - [02/Dec/2025 23:00:23] "POST /query HTTP/1.1" 200 -

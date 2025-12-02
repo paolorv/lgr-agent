@@ -1,0 +1,43 @@
+2025-12-02 22:08:33,970 - waffle_agent.waffle_agent - INFO - BEGINNING OF INTERACTION - LOGGING STARTED
+2025-12-02 22:12:24,226 - waffle_agent.waffle_agent - INFO - ROSA User Query: Tell me what's available as topics on the robot
+2025-12-02 22:12:25,741 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-02 22:12:29,587 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-02 22:12:29,595 - waffle_agent.waffle_agent - INFO - ROSA LLM response: The available topics on the robot are:
+
+1. `/camera/image_raw`: This topic likely provides raw image data from the robot's camera.
+2. `/parameter_events`: This topic is used for parameter event notifications.
+3. `/rosout`: This topic is used for logging messages.
+
+If you need more information about any of these topics or want to interact with them, feel free to ask!
+2025-12-02 22:12:51,080 - waffle_agent.waffle_agent - INFO - ROSA User Query: Tell me all the available topics
+2025-12-02 22:12:54,544 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-02 22:13:00,228 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-02 22:13:00,230 - waffle_agent.waffle_agent - INFO - ROSA LLM response: Here are all the available topics on the robot:
+
+1. `/camera/camera_info`: Provides camera calibration information.
+2. `/camera/image_raw`: Raw image data from the camera.
+3. `/camera/image_raw/compressed`: Compressed image data.
+4. `/camera/image_raw/compressedDepth`: Compressed depth image data.
+5. `/camera/image_raw/theora`: Theora-encoded video stream.
+6. `/camera/image_raw/zstd`: Zstandard-compressed image data.
+7. `/clock`: Provides the simulation clock time.
+8. `/cmd_vel`: Used to send velocity commands to the robot.
+9. `/imu`: Provides data from the Inertial Measurement Unit.
+10. `/joint_states`: Provides the state of the robot's joints.
+11. `/odom`: Provides odometry information.
+12. `/parameter_events`: Used for parameter event notifications.
+13. `/robot_description`: Contains the robot's URDF description.
+14. `/rosout`: Used for logging messages.
+15. `/scan`: Provides laser scan data.
+16. `/tf`: Provides the transformation frames.
+17. `/tf_static`: Provides static transformation frames.
+
+If you need more details or want to interact with any of these topics, let me know!
+2025-12-02 22:14:09,508 - waffle_agent.waffle_agent - INFO - ROSA User Query: Check in memory for a green trash can
+2025-12-02 22:14:13,626 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-02 22:14:31,322 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-02 22:14:31,334 - waffle_agent.waffle_agent - INFO - ROSA LLM response: The green trash can is located in the center of a room with a wooden floor and a large window. The robot was at position [1.241, 1.567, 0.0] when it observed the trash can. If you need further assistance or want to navigate to this location, feel free to ask!
+2025-12-02 22:14:39,519 - waffle_agent.waffle_agent - INFO - ROSA User Query: Check for other objects in the apartment
+2025-12-02 22:14:42,834 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-02 22:15:09,990 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-12-02 22:15:09,993 - waffle_agent.waffle_agent - INFO - ROSA LLM response: The rooms in the apartment were observed to be empty, with wooden walls and floors. No specific objects such as furniture, appliances, or decor items were noted. If you have any specific queries or need further assistance, feel free to ask!
