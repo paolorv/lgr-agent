@@ -57,7 +57,7 @@ fi
 # Build and run the Docker container
 CONTAINER_NAME="rosa-ltm-test"
 #echo "Building the $CONTAINER_NAME Docker image..."
-#docker build --build-arg DEVELOPMENT=$DEVELOPMENT -t $CONTAINER_NAME -f Dockerfile . || { echo "Error: Docker build failed"; exit 1; }
+docker build --build-arg DEVELOPMENT=$DEVELOPMENT -t $CONTAINER_NAME -f Dockerfile . || { echo "Error: Docker build failed"; exit 1; }
 
 echo "Running the Docker container..."
 

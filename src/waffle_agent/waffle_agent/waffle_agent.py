@@ -3,6 +3,7 @@ import asyncio
 import os
 import sys
 import threading
+import logging
 from datetime import datetime
 
 import dotenv
@@ -27,6 +28,8 @@ from waffle_agent.help import get_help
 from waffle_agent.llm import get_llm
 from waffle_agent.prompts import get_prompts
 # ---------------------------------------------
+logger = None  # Global logger variable (Logging is enabled only for streaming=False)
+
 
 @tool
 def cool_turtle_tool():
@@ -109,8 +112,8 @@ class TurtleAgent(ROSA):
         os.system("clear")
 
     def get_input(self, prompt: str):
-        # Added a print here to force flush buffer in case of lag
-        print("", end="", flush=True)
+       
+        print("", end="", flush=True)  # Print here to force flush buffer in case of lag
         return pyip.inputStr(prompt, default="help")
 
     async def run(self):
@@ -129,31 +132,32 @@ class TurtleAgent(ROSA):
 
     async def submit(self, query: str):
         # print(f"DEBUG: Received query: {query}") 
-        if self.__streaming:
-            # print("DEBUG: Starting stream response...") 
+        if self.__streaming: 
             await self.stream_response(query)
-        else:
-            # print("DEBUG: Starting standard response...") 
+        else: 
             self.print_response(query)
             
     def print_response(self, query: str):
         """Submit the query to the agent and print the response."""
-        
-        # 1. Get the response from LLM
-        # print("DEBUG: Invoking LLM chain (this might take time)...") 
+        logger = logging.getLogger(__name__)
+        logger.info(f"ROSA User Query: {query}")
+
         try:
             response = self.invoke(query)
-            # print("DEBUG: Response received!")
+            logger.info(f"ROSA LLM response: {response}")
         except Exception as e:
             print(f"ERROR from LLM: {e}")
+            logger.error(f"ROSA LLM error: {e}")
             return
 
-        # 2. Display it using Rich (This was missing in your new file!)
+        # Display returned response using Rich
         console = Console()
         with Live(console=console, auto_refresh=True, vertical_overflow="visible") as live:
             content_panel = Panel(Markdown(response), title="Final Response", border_style="green")
             live.update(content_panel, refresh=True)
 
+
+    #### Async components for streaming response (used if streaming=True) ####
     async def stream_response(self, query: str):
         console = Console()
         content = ""
@@ -191,12 +195,41 @@ class TurtleAgent(ROSA):
             # (Simple debug print if needed, or full implementation)
             pass
 
+
+
+
+def setup_logging():
+    # Create a logs directory if it doesn't exist
+    log_folder = 'logs'
+    os.makedirs(log_folder, exist_ok=True) 
+
+    # Set timestamp
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    log_filename = f"interaction_{timestamp}.log"
+    full_log_path = os.path.join(log_folder, log_filename)
+
+    logging.basicConfig(
+        filename=full_log_path,
+        filemode='a',      # Append mode
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        level=logging.INFO
+    )
+    
+    print(f"Logging initialized. Saving to: {full_log_path}")
+
+
 def main(args=None):
+    # Setup ROS 2 and load environment variables
     rclpy.init(args=args)
     dotenv.load_dotenv(dotenv.find_dotenv())
 
+    # Setup logging
+    setup_logging()
+    logger = logging.getLogger(__name__)
+    logger.info("BEGINNING OF INTERACTION - LOGGING STARTED")
+
+    ### Start ROS 2 Node and CuriosityAgent ###
     node = rclpy.create_node("waffle_agent")
-    
     node.declare_parameter("streaming", False)
     streaming = node.get_parameter("streaming").value
     

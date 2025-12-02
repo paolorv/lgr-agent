@@ -1,6 +1,7 @@
 from typing import Annotated, Literal, Sequence, TypedDict
 import traceback
 import sys, re
+import logging
 import os, dotenv # ADDED BY ME
 
 # from langchain_openai import OpenAIEmbeddings
@@ -158,8 +159,8 @@ class ReMEmbRAgent(Agent):
         self.build_graph()
 
 
-
-    def create_tools(self, memory):
+    ### Rename to create_tools and comment the one following this if we don't want CUSTOM LOGGING ###
+    def create_tools_ORIGINAL(self, memory):
 
         template = "At time={{time}} seconds, the robot was at an average position of {{position}} with an average orientation of {{theta}} radians. "
         template += "The robot saw the following: {{page_content}}"
@@ -213,6 +214,113 @@ class ReMEmbRAgent(Agent):
 
         self.tool_list = [self.retriever_tool, self.position_retriever_tool, self.time_retriever_tool]
         self.tool_definitions = [convert_to_openai_function(t) for t in self.tool_list]
+
+
+
+    
+    def create_tools(self, memory):
+        # Get the logger for this file
+        print("STARTING TOOOOOOOOOOOOOOOOOOL CREATION")
+        
+        logger = logging.getLogger(__name__)
+
+        # --- (Same as before) ---
+        
+        class TextRetrieverInput(BaseModel):
+            x: str = Field(description="The query that will be searched by the vector similarity-based retriever.\
+                                Text embeddings of this description are used. There should always be text in here as a response! \
+                                Based on the question and your context, decide what text to search for in the database. \
+                                This query argument should be a phrase such as 'a crowd gathering' or 'a green car driving down the road'.\
+                                The query will then search your memories for you.")
+
+        class PositionRetrieverInput(BaseModel):
+            x: tuple = Field(description="The query that will be searched by finding the nearest memories at this (x,y,z) position.\
+                                The query must be an (x,y,z) array with floating point values \
+                                Based on the question and your context, decide what position to search for in the database. \
+                                This query argument should be a position such as (0.5, 0.2, 0.1). They should NOT be a string. \
+                                The query will then search your memories for you.") 
+
+        class TimeRetrieverInput(BaseModel):
+            x: str = Field(description="The query that will be searched by finding the nearest memories at a specific time in H:M:S format.\
+                                The query must be a string containing only time. \
+                                Based on the question and your context, decide what time to search for in the database. \
+                                This query argument should be an HMS time such as 08:02:03 with leading zeros. \
+                                The query will then search your memories for you.")
+
+
+        # --- 2. Define Explicit Functions (Add your logs here) ---
+
+        def run_text_search(x):
+            # [LOG POINT 1] Log the query 
+            logger = logging.getLogger(__name__)
+            logger.info(f"[REMEMBR Text Search] Agent is asking for: {x}")
+            
+            # Run the search
+            results = memory.search_by_text(x)
+            
+            # [LOG POINT 2] Log the result
+            logger.info(f"[REMEMBR Text Search] Database returned {len(results)} results.")
+            logger.info(f"[REMEMBR Text Search] Content: {results}")
+            
+            return results
+
+        def run_position_search(x):
+            # [LOG POINT 1] Log the query
+            logger = logging.getLogger(__name__)
+            logger.info(f"[Pos Search] Agent is asking for coordinates: {x}")
+            
+            # Run the search
+            results = memory.search_by_position(x)
+            
+            # [LOG POINT 2] Log the result
+            logger.info(f"[REMEMBR Pos Search] Database returned {len(results)} results.")
+            logger.info(f"[REMEMBR Pos Search] Content: {results}")
+            
+            return results
+
+        def run_time_search(x):
+            # [LOG POINT 1] Log the query
+            logger = logging.getLogger(__name__)
+            logger.info(f"[REMEMBR Time Search] Agent is asking for time: {x}")
+            
+            # Run the search
+            results = memory.search_by_time(x)
+            
+            # [LOG POINT 2] Log the result
+            logger.info(f"[REMEMBR Time Search] Database returned {len(results)} results.")
+            logger.info(f"[REMEMBR Time Search] Content: {results}")
+            
+            return results
+
+
+        # Explicit functions (same as lambdas above)
+
+        self.retriever_tool = StructuredTool.from_function(
+            func=run_text_search,  # <--- Use the named function here
+            name="retrieve_from_text",
+            description="Search and return information from your video memory in the form of captions",
+            args_schema=TextRetrieverInput
+        )
+
+        self.position_retriever_tool = StructuredTool.from_function(
+            func=run_position_search, # <--- Use the named function here
+            name="retrieve_from_position",
+            description="Search and return information from your video memory by using a position array such as (x,y,z)",
+            args_schema=PositionRetrieverInput
+        )
+
+        self.time_retriever_tool = StructuredTool.from_function(
+            func=run_time_search, # <--- Use the named function here
+            name="retrieve_from_time",
+            description="Search and return information from your video memory by using an H:M:S time.",
+            args_schema=TimeRetrieverInput
+        )
+
+        self.tool_list = [self.retriever_tool, self.position_retriever_tool, self.time_retriever_tool]
+        self.tool_definitions = [convert_to_openai_function(t) for t in self.tool_list]
+
+
+
 
     ### Nodes
 

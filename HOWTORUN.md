@@ -2,6 +2,7 @@
 ### To run rosa-ltm:
 cd GitRepositoris/curiosityagent
 ./start.sh
+
 ### To run milvusdb
 cd GitRepositoris/curiosityagent/milvusconfig
 bash milvus_patch.sh stop   # IF NEEDED
@@ -26,7 +27,7 @@ tmux
 ### Terminal 1
 ./runwafflehz.sh
 ### Terminal 2
-start
+start   ----> Also builds the package, run before running Captioner+Memory nodes
 ### Terminal 3
 ****ADD RUN CAPTIONER NODE FROM ros2 run waffle_agent****
 ### Terminal 4

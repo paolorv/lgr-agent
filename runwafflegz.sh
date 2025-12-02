@@ -1,5 +1,5 @@
 cd /app/
-export TURTLEBOT3_MODEL=waffle_pi
+export TURTLEBOT3_MODEL=waffle
 export GZ_SIM_RESOURCE_PATH=/opt/ros/jazzy/share:/opt/ros/jazzy/share/turtlebot3_gazebo/models
 
 # Bridge /cmd_vel topic between ROS2 and Gazebo
