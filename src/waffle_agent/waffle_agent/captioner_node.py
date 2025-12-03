@@ -15,8 +15,8 @@ class VILACaptionerClient(Node):
         
         # Latest available frame
         self.latest_cv_img = None
-        self.latest_pos= None
-        self.latest_time = None
+        #self.latest_pos= None
+        #self.latest_time = None
 
         # CAPTION PUBLISHER
         self.publisher_ = self.create_publisher(String, '/captions', 10)
@@ -28,22 +28,6 @@ class VILACaptionerClient(Node):
             self.img_callback, 
             10
         )
-
-        # POSITION SUBSCRIPTION
-        #self.sub = self.create_subscription(
-        #    Image, 
-        #    '/odom', 
-        #    self.pos_callback, 
-        #    10
-        #)
-
-        # TIME SUBSCRIPTION
-        #self.sub = self.create_subscription(
-        #    Image, 
-        #    '/clock', 
-        #    self.time_callback, 
-        #    10
-        #)
         
         # PROCESS MEMORY ITEM EVERY N SECONDS --> Callback posts to the memory server
         self.process_timer = self.create_timer(7.0, self.timer_callback)
@@ -51,28 +35,13 @@ class VILACaptionerClient(Node):
         self.api_url = "http://localhost:8001/caption"
         self.get_logger().info("VILA Client Started. Sending multipart/form-data requests...")
 
+
     def img_callback(self, msg):
         """Keep latest available frame."""
         try:
             self.latest_cv_img = self.bridge.imgmsg_to_cv2(msg, "bgr8")
         except Exception as e:
             self.get_logger().error(f"Frame conversion error: {e}")
-
-    #def pos_callback(self, msg):
-    #    """Keep latest available frame."""
-    #    try:
-    #        self.latest_cv_img = msg.pose.pose.position
-    #    except Exception as e:
-    #        self.get_logger().error(f"Frame conversion error: {e}")
-
-    #def time_callback(self, msg):
-    #    """Keep latest available frame."""
-    #    try:
-     #       self.latest_cv_img = msg
-     #   except Exception as e:
-     #       self.get_logger().error(f"Frame conversion error: {e}")
-
-
 
 
 
@@ -85,34 +54,29 @@ class VILACaptionerClient(Node):
             cv_img = self.latest_cv_img
             self.latest_cv_img = None # Prevent re-sending same frame if camera dies
 
-            # 1. Encode to JPEG buffer
+            # JPEG buffer
             _, buffer = cv2.imencode('.jpg', cv_img)
             
-            # 2. Get raw bytes (no Base64 encoding needed!)
+            # Get raw bytes from last frame
             img_bytes = buffer.tobytes()
 
-            # 3. Prepare the Multipart payload
-            # 'file': (filename, file_bytes, mime_type)
+            # Configure request to send: image file, captioning task
             files = {
                 'file': ('camera_frame.jpg', img_bytes, 'image/jpeg')
             }
-            
-            # 4. Optional form fields
             data = {
-                'task': '<MORE_DETAILED_CAPTION>'
-                #'task': 'Describe the image, focusing on key elements and objects.'
-                #'task': 'Describe the image, focusing on key elements and objects and their distance compared to your perspective.'
+                'task': '<MORE_DETAILED_CAPTION>' # Most detailed captioning task preset available on the model
             }
 
             self.get_logger().info("Sending image to server...")
             start = time.time()
             
-            # 5. Send POST using 'files=' parameter
+            # Send POST using 'files=' parameter
             response = requests.post(self.api_url, files=files, data=data)
             latency = time.time() - start
 
             if response.status_code == 200:
-                # 6. Parse result based on your server's return: {"task":..., "result":...}
+                # Parse result based on your server's return: {"task":..., "result":...}
                 response_data = response.json()
                 raw_caption = response_data.get('result', 'No caption found')
                 caption_msg = String() # Wrap in ROS2 String message

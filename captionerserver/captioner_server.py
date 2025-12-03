@@ -14,7 +14,7 @@ torch_dtype = torch.float16 if torch.cuda.is_available() else torch.float32
 
 print(f"Initializing Florence-2 Service on {device}...")
 
-# 1. LOAD MODEL (Global variable, loaded once at startup)
+# LOAD MODEL (Global variable, loaded once at startup)
 # We use 'eager' attention to prevent the 4.46+ transformers crash
 model = AutoModelForCausalLM.from_pretrained(
     model_id, 
@@ -31,7 +31,7 @@ processor = AutoProcessor.from_pretrained(
 print("Florence-2 Service Ready!")
 
 def run_inference(image, task_prompt):
-    """Helper to run the model on a PIL Image"""
+    """Process frame with selected task from input_ids"""
     # Ensure RGB
     if image.mode != "RGB":
         image = image.convert("RGB")

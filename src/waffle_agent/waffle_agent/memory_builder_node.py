@@ -51,24 +51,6 @@ class MemoryBuilderNode(Node):
         #self.logger.info("Received pose message (MARKPOSE)")
 
 
-    #def caption_callback(self, msg: String):
-
-#        if self.pose_msg is not None:
-
-#            position, angle, pose_time = format_pose_msg(self.pose_msg)
-#            self.logger.info(f"MARK1")
-#            memoryItem = MemoryItem(
-#                caption=msg.data,
-#                time=pose_time,
-#                position=position,
-#                theta=angle
-#            )
-#            self.logger.info(f"MARK2")
-#            self.memory.insert(memoryItem)
-#            self.logger.info(f"ADDED MEMORY ITEM {memoryItem}")
-#        else :
-#            self.logger.warning("No pose message received yet; cannot create memory item.")
-
     def caption_callback(self, msg: String):
 
         if self.pose_msg is None:
