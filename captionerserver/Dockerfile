@@ -13,8 +13,12 @@ RUN apt-get update && apt-get install -y \
 
 # 2. Install Python Dependencies
 # CHECK CUDA VERSION AND ADJUST TORCH: THEY NEED TO MATCH IN PRE-COMPILATION
-RUN pip install --no-cache-dir \
-    torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+#RUN pip install --no-cache-dir \
+#    torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+
+# IF RUNNING ON CUDA 13.0 USE THIS INSTEAD:
+RUN pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu130
+
 
 RUN pip install --no-cache-dir \
     flask \

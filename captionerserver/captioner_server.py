@@ -85,6 +85,38 @@ def caption():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+@app.route("/labels", methods=["POST"])
+def labels():
+    """
+    Endpoint to receive an image and return a set of labels.
+    Expects 'file' in multipart/form-data.
+    Optional: 'task' form field (default: <MORE_DETAILED_CAPTION>)
+    """
+    if 'file' not in request.files:
+        return jsonify({"error": "No file part provided"}), 400
+    
+    file = request.files['file']
+    task = request.form.get("task", "<OD>")
+    
+    if file.filename == '':
+        return jsonify({"error": "No file selected"}), 400
+
+    try:
+        # Load image from bytes
+        image = Image.open(io.BytesIO(file.read()))
+        
+        # Run inference
+        result = run_inference(image, task)
+        
+        # Return JSON
+        return jsonify({
+            "task": task,
+            "result": result[task] # Extract just the text/data
+        })
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route("/health", methods=["GET"])
 def health():
