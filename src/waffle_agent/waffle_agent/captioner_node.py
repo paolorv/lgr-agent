@@ -76,7 +76,7 @@ class VILACaptionerClient(Node):
             latency = time.time() - start
 
             if response.status_code == 200:
-                # Parse result based on your server's return: {"task":..., "result":...}
+                # Parse result based on server's return: {"task":..., "result":...}
                 response_data = response.json()
                 raw_caption = response_data.get('result', 'No caption found')
                 caption_msg = String() # Wrap in ROS2 String message
