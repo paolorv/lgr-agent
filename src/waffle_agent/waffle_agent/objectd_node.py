@@ -122,11 +122,11 @@ class ObjectDetectionClient(Node):
                 labels_list = result_dict.get('labels', [])
 
                 if labels_list:  # Only publish if objects were actually detected
-                    caption_msg = String()
+                    labels_msg = String()
                     # Convert the Python list to a JSON-formatted string
-                    caption_msg.data = json.dumps(labels_list) #### CHECK CONVERSION ############
+                    labels_msg.data = json.dumps(labels_list) #### CHECK CONVERSION ############
                     
-                    self.publisher_.publish(caption_msg)
+                    self.publisher_.publish(labels_msg)
                     self.get_logger().info(f"Ref: {latency:.2f}s | Published labels: {labels_list}")
                 else:
                     self.get_logger().info(f"Ref: {latency:.2f}s | No objects detected.")

@@ -89,3 +89,20 @@ def query_long_term_memory(query: str):
     except Exception as e:
         if NODE: NODE.get_logger().error(f"Failed to query Remembr server: {e}")
         return f"Error querying Remembr server: {e}"
+
+def query_graph_memory_semantical(query: str):
+    """
+    Queries the robot's graph memory for semantically similar entries.
+    """
+    ### IMPLEMENT REQUEST based on service definition in graphmemory_manager
+    
+    return "Graph memory query not implemented yet."
+
+
+def query_graph_memory_positional(query: str):
+    """
+    Queries the robot's graph memory for positionally close nodes.
+    """
+    ### IMPLEMENT REQUEST based on service definition in graphmemory_manager
+    
+    return "Graph memory query not implemented yet."

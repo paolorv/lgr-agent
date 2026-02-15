@@ -1,3 +1,4 @@
+from pyexpat import model
 import rclpy
 from rclpy.node import Node
 from tf2_ros import Buffer, TransformListener
@@ -20,6 +21,7 @@ class BatchSemanticGraph(Node):
 
         self.declare_parameter("pose_topic", "/odom")
         self.declare_parameter("label_topic", "/labels")
+        self.declare_parameter("top_k_return", 5)  # Objects returned from sevice calls
         
         # Hyperparameters
         self.SPATIAL_THRESH = 2.0  # Meters
@@ -49,6 +51,19 @@ class BatchSemanticGraph(Node):
             self.get_parameter("label_topic").value,
             self.labels_callback,
             10
+        )
+
+        ### Services
+        self.srv_search_by_label = self.create_service(
+            String, 
+            'search_by_label', 
+            self.labelsearch_callback
+        )
+
+        self.srv_search_by_position = self.create_service(
+            String, 
+            'search_by_position', 
+            self.positionsearch_callback
         )
 
     # CALLBACK TO KEEP ROBOT POSITION UPDATED
@@ -188,6 +203,36 @@ class BatchSemanticGraph(Node):
     #def publish_markers(self):
     #    # ADD FOR RVIZ
     #    pass
+
+
+    def labelsearch_callback(self, request, response):
+        query_vec = self.model.encode(request.query_text)
+        scores = []
+    
+        for node, data in self.graph.nodes(data=True):
+            # Calculate cosine similarity: (A · B) / (||A|| * ||B||)
+            sim = np.dot(query_vec, data['embedding']) / (np.linalg.norm(query_vec) * np.linalg.norm(data['embedding']))
+            scores.append((node, sim))
+        
+        # Sort by highest similarity
+        response.top_kresults = sorted(scores, key=lambda x: x[1], reverse=True)[:self.get_parameter("top_k_return").value]
+
+        return response
+
+    def positionsearch_callback(self, request, response):
+        scores = []
+    
+        for node, data in self.graph.nodes(data=True):
+            node_pos = np.array(data['pos'])
+            dist = np.linalg.norm(np.array(request.query_position) - node_pos)
+            scores.append((node, dist))
+        
+        # Sort by closest distance
+        response.top_kresults = sorted(scores, key=lambda x: x[1])[:self.get_parameter("top_k_return").value]
+
+        return response
+
+
 
 def main():
     rclpy.init()
