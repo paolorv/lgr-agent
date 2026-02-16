@@ -8,7 +8,7 @@ import io
 app = Flask(__name__)
 
 # --- GLOBAL CONFIG ---
-model_id = "microsoft/Florence-2-base"
+model_id = "microsoft/Florence-2-large"
 device = "cuda" if torch.cuda.is_available() else "cpu"
 torch_dtype = torch.float16 if torch.cuda.is_available() else torch.float32
 

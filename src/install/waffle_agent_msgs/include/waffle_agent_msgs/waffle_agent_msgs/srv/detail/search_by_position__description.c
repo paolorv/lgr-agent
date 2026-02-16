@@ -69,8 +69,8 @@ waffle_agent_msgs__srv__SearchByPosition_Event__get_type_hash(
 
 // Include directives for referenced types
 #include "waffle_agent_msgs/msg/detail/graph_result__functions.h"
-#include "service_msgs/msg/detail/service_event_info__functions.h"
 #include "builtin_interfaces/msg/detail/time__functions.h"
+#include "service_msgs/msg/detail/service_event_info__functions.h"
 
 // Hashes for external referenced types
 #ifndef NDEBUG

@@ -126,17 +126,23 @@ class BatchSemanticGraph(Node):
             
             if dist < self.SPATIAL_THRESH:
                 # Angle THRESHOLD Check
-                node_yaw = data['pos'][2]
+                node_yaw = data['pos'][2] # Yaw of the robot when node was detected
                 angle_diff = abs(np.arctan2(np.sin(current_yaw - node_yaw), np.cos(current_yaw - node_yaw)))
                 
                 if angle_diff < self.ANGLE_THRESH:
-                    nearby_nodes.append((node_id, data))
+                    nearby_nodes.append((node_id, data)) ## SET OF NODES CONSIDERED "CLOSE" FOR THE CURRENT POS+ORIENTATION
 
-        # GROUP INPUTS BY SEMANTICS
+            #else: self.get_logger().info(f"Previous pos: {data['pos']}\nCurrent pos: {current_pose}")
+
+        #### GROUP INPUTS BY SEMANTICS: 
+        # process based on the known number of surrounding nodes for the current pos+orientation
         # Input: ['cup', 'cup', 'cup', 'mouse'] -> {'cup': 3, 'mouse': 1}
         incoming_counts = Counter(labels_in_frame)
 
         # MATCHING LOGIC
+        # Handles possibility that current object is being detected with a different label
+        # of equivalent semantic meaning w.r.t. a previous detection of the same object
+        # (e.g. "Cup" and "Mug" will have very similar 'sim' score, so we avoid having semantic duplicates)
         for label, count_seen in incoming_counts.items():
             embedding = self.model.encode(label)
             
@@ -154,7 +160,7 @@ class BatchSemanticGraph(Node):
             
             # RECONCILE
             if count_seen > count_known:
-                # Case A: We see MORE than we knew. 
+                # CASE A: WE SEE MORE THAN WE KNEW. 
                 # Action: Update all known ones, create (seen - known) new ones.
                 
                 # Update existing (Refresh timestamp/position)
@@ -167,12 +173,10 @@ class BatchSemanticGraph(Node):
                     self.create_node(label, embedding, current_pose)
                     
             else:
-                # Case B: We see FEWER or EQUAL to what we knew.
+                # CASE B: WE SEE FEWER or EQUAL TO WHAT WE KNEW.
                 # Action: Just update the closest 'count_seen' nodes.
                 # (We don't delete the extras immediately; maybe they are occluded)
-                
-                # Sort existing matches by distance to current robot pose to update the most likely ones
-                # (Optional refinement)
+                # TODO: HANDLE OBJECTS NOT BEING SEEN (DELETE NODES)
                 for i in range(count_seen):
                     self.update_node(existing_matches[i], current_pose)
 
