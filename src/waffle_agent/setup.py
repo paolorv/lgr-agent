@@ -29,7 +29,9 @@ setup(
             # Ensure these paths exist: waffle_agent/waffle_agent.py -> main()
             'agent = waffle_agent.waffle_agent:main',
             'captioner_node = waffle_agent.captioner_node:main', 
-            'memory_builder_node = waffle_agent.memory_builder_node:main', 
+            'memory_builder_node = waffle_agent.memory_builder_node:main',
+            'objectdetection_node = waffle_agent.objectdetection_node:main',
+            'graphmemory_manager = waffle_agent.graphmemory_manager:main',
         ],
     },
 )

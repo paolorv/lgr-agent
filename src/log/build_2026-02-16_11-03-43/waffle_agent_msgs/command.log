@@ -1,0 +1,2 @@
+Invoking command in '/app/src/build/waffle_agent_msgs': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy PS1=${debian_chroot:+($debian_chroot)}\u@\h:\w\$ /usr/bin/cmake /app/src/waffle_agent_msgs -DCMAKE_INSTALL_PREFIX=/app/src/install/waffle_agent_msgs
+Invoked command in '/app/src/build/waffle_agent_msgs' returned '1': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy PS1=${debian_chroot:+($debian_chroot)}\u@\h:\w\$ /usr/bin/cmake /app/src/waffle_agent_msgs -DCMAKE_INSTALL_PREFIX=/app/src/install/waffle_agent_msgs

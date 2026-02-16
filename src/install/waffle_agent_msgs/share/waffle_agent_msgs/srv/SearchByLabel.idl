@@ -1,0 +1,16 @@
+// generated from rosidl_adapter/resource/srv.idl.em
+// with input from waffle_agent_msgs/srv/SearchByLabel.srv
+// generated code does not contain a copyright notice
+
+#include "waffle_agent_msgs/msg/GraphResult.idl"
+
+module waffle_agent_msgs {
+  module srv {
+    struct SearchByLabel_Request {
+      string query_text;
+    };
+    struct SearchByLabel_Response {
+      sequence<waffle_agent_msgs::msg::GraphResult> top_k_results;
+    };
+  };
+};

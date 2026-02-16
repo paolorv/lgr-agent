@@ -20,7 +20,7 @@ class ObjectDetectionClient(Node):
         #self.latest_time = None
 
         # CAPTION PUBLISHER
-        self.publisher_ = self.create_publisher(String, '/od_labels', 10)
+        self.publisher_ = self.create_publisher(String, '/labels', 10)
 
         # FRAME SUBSCRIPTION
         self.sub = self.create_subscription(
@@ -34,7 +34,7 @@ class ObjectDetectionClient(Node):
         self.process_timer = self.create_timer(7.0, self.timer_callback)
 
         self.api_url = "http://localhost:8001/labels"
-        self.get_logger().info("VILA Client Started. Sending multipart/form-data requests...")
+        self.get_logger().info("OD Client Started. Sending multipart/form-data requests...")
 
 
     def img_callback(self, msg):

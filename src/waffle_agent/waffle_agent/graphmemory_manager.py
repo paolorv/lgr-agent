@@ -13,6 +13,11 @@ from nav_msgs.msg import Odometry
 from std_msgs.msg import String
 from visualization_msgs.msg import Marker, MarkerArray
 
+# CUSTOM INTERFACES FOR SERVICES
+# Make sure you built the 'waffle_agent_msgs' package
+from waffle_agent_msgs.srv import SearchByLabel, SearchByPosition
+from waffle_agent_msgs.msg import GraphResult
+
 from waffle_agent.common_utils import format_pose_msg
 
 class BatchSemanticGraph(Node):
@@ -55,13 +60,13 @@ class BatchSemanticGraph(Node):
 
         ### Services
         self.srv_search_by_label = self.create_service(
-            String, 
+            SearchByLabel, 
             'search_by_label', 
             self.labelsearch_callback
         )
 
         self.srv_search_by_position = self.create_service(
-            String, 
+            SearchByPosition, 
             'search_by_position', 
             self.positionsearch_callback
         )
@@ -77,23 +82,25 @@ class BatchSemanticGraph(Node):
             # Decode the JSON string back into a Python list
             # "[\"car\", \"wheel\", \"wheel\"]" -> ['car', 'wheel', 'wheel']
             labels_in_frame = json.loads(msg.data)
+            self.get_logger().info("Received labels_in_frame.")
             
         except json.JSONDecodeError:
             self.get_logger().error("Failed to decode incoming labels JSON.")
             return
 
         if not labels_in_frame:
+            self.get_logger().info("No labels in received data pack")
             return
 
         # 1. Get the current robot pose
-        pose = self.get_robot_pose()
+        #pose = self.pose_msg
         
-        if pose:
+        if self.pose_msg:
             # 2. Pass the list directly to the batch processor
-            self.process_batch(labels_in_frame, pose)
+            self.process_batch(labels_in_frame)
             
             # 3. Update Rviz
-            self.publish_markers()
+            #self.publish_markers()
 
     def process_batch(self, labels_in_frame):
         """
@@ -107,7 +114,7 @@ class BatchSemanticGraph(Node):
         current_yaw = angle
         current_pose = (current_x, current_y, current_yaw)
 
-        # 1. FIND RELEVANT EXISTING NODES (Spatial & Angular Gating)
+        # FIND RELEVANT EXISTING NODES (Spatial & Angular Gating)
         # We only want to match against nodes that are CLOSE and in FRONT of us.
         nearby_nodes = []
         
@@ -118,23 +125,18 @@ class BatchSemanticGraph(Node):
             dist = np.linalg.norm([current_x - node_x, current_y - node_y])
             
             if dist < self.SPATIAL_THRESH:
-                # Angle Check (Are we looking in roughly the same direction?)
-                # If I saw a cup facing North, and now I'm facing South at the same spot,
-                # it's probably a different cup behind me.
+                # Angle THRESHOLD Check
                 node_yaw = data['pos'][2]
                 angle_diff = abs(np.arctan2(np.sin(current_yaw - node_yaw), np.cos(current_yaw - node_yaw)))
                 
                 if angle_diff < self.ANGLE_THRESH:
                     nearby_nodes.append((node_id, data))
 
-        # 2. GROUP INPUTS BY SEMANTICS
+        # GROUP INPUTS BY SEMANTICS
         # Input: ['cup', 'cup', 'cup', 'mouse'] -> {'cup': 3, 'mouse': 1}
-        # Note: In a real system, you'd group by embedding similarity, 
-        # but for simplicity, we group by exact string here. 
-        # (You can swap this for clustering embeddings if needed).
         incoming_counts = Counter(labels_in_frame)
 
-        # 3. MATCHING LOGIC
+        # MATCHING LOGIC
         for label, count_seen in incoming_counts.items():
             embedding = self.model.encode(label)
             
@@ -150,7 +152,7 @@ class BatchSemanticGraph(Node):
             
             count_known = len(existing_matches)
             
-            # 4. RECONCILE
+            # RECONCILE
             if count_seen > count_known:
                 # Case A: We see MORE than we knew. 
                 # Action: Update all known ones, create (seen - known) new ones.
@@ -175,7 +177,7 @@ class BatchSemanticGraph(Node):
                     self.update_node(existing_matches[i], current_pose)
 
     def create_node(self, label, embedding, pose):
-        # Add jitter so markers don't overlap perfectly in Rviz
+        # Jitter so markers don't overlap perfectly in Rviz
         #jx = np.random.uniform(-0.1, 0.1)
         #jy = np.random.uniform(-0.1, 0.1)
         jx = 0
@@ -205,33 +207,94 @@ class BatchSemanticGraph(Node):
     #    pass
 
 
-    def labelsearch_callback(self, request, response):
-        query_vec = self.model.encode(request.query_text)
-        scores = []
-    
-        for node, data in self.graph.nodes(data=True):
-            # Calculate cosine similarity: (A · B) / (||A|| * ||B||)
-            sim = np.dot(query_vec, data['embedding']) / (np.linalg.norm(query_vec) * np.linalg.norm(data['embedding']))
-            scores.append((node, sim))
+#    def labelsearch_callback(self, request, response):
+#        query_vec = self.model.encode(request.query_text)
+#        scores = []
+#    
+#        for node, data in self.graph.nodes(data=True):
+#            # Calculate cosine similarity: (A · B) / (||A|| * ||B||)
+#            sim = np.dot(query_vec, data['embedding']) / (np.linalg.norm(query_vec) * np.linalg.norm(data['embedding']))
+#            scores.append((node, sim))
         
         # Sort by highest similarity
-        response.top_kresults = sorted(scores, key=lambda x: x[1], reverse=True)[:self.get_parameter("top_k_return").value]
+#        response.top_kresults = sorted(scores, key=lambda x: x[1], reverse=True)[:self.get_parameter("top_k_return").value]
 
+#        return response
+
+    def labelsearch_callback(self, request, response):
+        # Request comes in as 'query_text' (string)
+        query_vec = self.model.encode(request.query_text)
+        candidates = []
+    
+        # Calculate Scores
+        for node_id, data in self.graph.nodes(data=True):
+            sim = np.dot(query_vec, data['embedding']) / (np.linalg.norm(query_vec) * np.linalg.norm(data['embedding']))
+            candidates.append((node_id, data, sim))
+
+        top_k = sorted(candidates, key=lambda x: x[2], reverse=True)[:self.get_parameter("top_k_return").value]
+
+        # Create GRAPHRESULT custom message
+        results_list = []
+        for nid, data, score in top_k:
+            res = GraphResult()
+            res.node_id = int(nid)
+            res.label = str(data['label'])
+            res.score = float(score)
+            res.position = [float(x) for x in data['pos']] # Ensure simple float list
+            results_list.append(res)
+
+        # Assign to response
+        response.top_k_results = results_list
         return response
 
-    def positionsearch_callback(self, request, response):
-        scores = []
+#    def positionsearch_callback(self, request, response):
+#        scores = []
     
-        for node, data in self.graph.nodes(data=True):
-            node_pos = np.array(data['pos'])
-            dist = np.linalg.norm(np.array(request.query_position) - node_pos)
-            scores.append((node, dist))
+#        for node, data in self.graph.nodes(data=True):
+#            node_pos = np.array(data['pos'])
+#            dist = np.linalg.norm(np.array(request.query_position) - node_pos)
+#            scores.append((node, dist))
         
         # Sort by closest distance
-        response.top_kresults = sorted(scores, key=lambda x: x[1])[:self.get_parameter("top_k_return").value]
+#        response.top_kresults = sorted(scores, key=lambda x: x[1])[:self.get_parameter("top_k_return").value]
 
+#        return response
+
+    def positionsearch_callback(self, request, response):
+        candidates = []
+        target_pos = np.array(request.query_position)
+    
+        for node_id, data in self.graph.nodes(data=True):
+            node_pos = np.array(data['pos']) # [x, y, theta]
+            
+            # FIX: Only use X and Y (indices 0 and 1) for distance ---
+            # We assume the first 2 elements are always X and Y.
+            # We ignore theta (index 2) for the distance score.
+            xy_node = node_pos[:2]
+            xy_target = target_pos[:2]
+            
+            dist = np.linalg.norm(xy_target - xy_node)
+            # ------------------------------------------------------------
+            
+            candidates.append((node_id, data, dist))
+        
+        # Sort by distance
+        top_k = sorted(candidates, key=lambda x: x[2])[:self.get_parameter("top_k_return").value]
+
+        results_list = []
+        for nid, data, dist in top_k:
+            res = GraphResult()
+            res.node_id = int(nid)
+            res.label = str(data.get('label', 'unknown'))
+            res.score = float(dist)
+            
+            # We still RETURN the full [x, y, theta] so the robot knows orientation
+            res.position = [float(x) for x in data['pos']] 
+            
+            results_list.append(res)
+
+        response.top_k_results = results_list
         return response
-
 
 
 def main():
@@ -241,7 +304,3 @@ def main():
     node.destroy_node()
     rclpy.shutdown()
 
-
-
-
-# Further Implementations: setting a decay on nodes that haven't been seen for a while

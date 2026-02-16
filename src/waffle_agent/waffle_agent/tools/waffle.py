@@ -11,6 +11,12 @@ from langchain_core.tools import tool
 #It was:
 #from langchain.agents import tool, Tool
 
+# GRAPH-SEARCH NECESSARY
+import json
+import ast
+# Import the services so we can create the clients
+from waffle_agent_msgs.srv import SearchByLabel, SearchByPosition
+
 # Global references to be set by the main agent
 NODE: Node = None
 CMD_VEL_PUB = None
@@ -90,19 +96,93 @@ def query_long_term_memory(query: str):
         if NODE: NODE.get_logger().error(f"Failed to query Remembr server: {e}")
         return f"Error querying Remembr server: {e}"
 
+@tool
 def query_graph_memory_semantical(query: str):
     """
     Queries the robot's graph memory for semantically similar entries.
+    Input: A description of what to find (e.g. "kitchen objects", "danger").
     """
-    ### IMPLEMENT REQUEST based on service definition in graphmemory_manager
+    global NODE
+    if NODE is None:
+        return "Error: ROS Node not initialized."
+
+    # Create Client
+    client = NODE.create_client(SearchByLabel, 'search_by_label')
+    if not client.wait_for_service(timeout_sec=1.0):
+        return "Error: Semantic Graph Service is offline."
+
+    # Build Request
+    req = SearchByLabel.Request()
+    req.query_text = query
+
+    # Call Service
+    future = client.call_async(req)
     
-    return "Graph memory query not implemented yet."
+    # Wait for result (Using the global NODE to spin)
+    rclpy.spin_until_future_complete(NODE, future)
+    
+    # Parse Result
+    if future.result() is not None:
+        response = future.result()
+        
+        output = []
+        for item in response.top_k_results:
+            output.append({
+                "id": item.node_id,
+                "label": item.label,
+                "similarity": round(item.score, 2),
+                "pos": [round(p, 3) for p in item.position]
+            })
+        return json.dumps(output)
+    else:
+        return f"Error: {future.exception()}"
 
 
+@tool
 def query_graph_memory_positional(query: str):
     """
     Queries the robot's graph memory for positionally close nodes.
+    Input: A string list of coordinates [x, y, radians] (e.g. "[1.0, 2.0, 1.7]").
     """
-    ### IMPLEMENT REQUEST based on service definition in graphmemory_manager
+    global NODE
+    if NODE is None:
+        return "Error: ROS Node not initialized."
+
+    # Parse Input String -> Float List
+    try:
+        # Tries JSON "[1, 2]" first, falls back to Python literal
+        try:
+            coords = json.loads(query)
+        except:
+            coords = ast.literal_eval(query)
+        query_pos = [float(x) for x in coords]
+    except:
+        return "Error: Input must be a coordinate list like '[x, y, theta]'."
+
+    # Create Client
+    client = NODE.create_client(SearchByPosition, 'search_by_position')
+    if not client.wait_for_service(timeout_sec=1.0):
+        return "Error: Positional Graph Service is offline."
+
+    # Build Request + Call service
+    req = SearchByPosition.Request()
+    req.query_position = query_pos
+    future = client.call_async(req)
     
-    return "Graph memory query not implemented yet."
+    # Wait for result
+    rclpy.spin_until_future_complete(NODE, future)
+    
+    # Parse Result
+    if future.result() is not None:
+        response = future.result()
+        output = []
+        for item in response.top_k_results:
+            output.append({
+                "id": item.node_id,
+                "label": item.label,
+                "distance": round(item.score, 2),   # Round to avoid decimal explosionm
+                "pos": [round(p, 3) for p in item.position]
+            })
+        return json.dumps(output)
+    else:
+        return f"Error: {future.exception()}"

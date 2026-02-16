@@ -1,0 +1,55 @@
+[0.011s] Invoking command in '/app/src/build/waffle_agent_msgs': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy PS1=${debian_chroot:+($debian_chroot)}\u@\h:\w\$ /usr/bin/cmake /app/src/waffle_agent_msgs -DCMAKE_INSTALL_PREFIX=/app/src/install/waffle_agent_msgs
+[0.066s] -- The C compiler identification is GNU 13.3.0
+[0.118s] -- The CXX compiler identification is GNU 13.3.0
+[0.134s] -- Detecting C compiler ABI info
+[0.219s] -- Detecting C compiler ABI info - done
+[0.227s] -- Check for working C compiler: /usr/bin/cc - skipped
+[0.227s] -- Detecting C compile features
+[0.227s] -- Detecting C compile features - done
+[0.235s] -- Detecting CXX compiler ABI info
+[0.332s] -- Detecting CXX compiler ABI info - done
+[0.340s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[0.340s] -- Detecting CXX compile features
+[0.341s] -- Detecting CXX compile features - done
+[0.348s] -- Found ament_cmake: 2.5.4 (/opt/ros/jazzy/share/ament_cmake/cmake)
+[0.473s] -- Found Python3: /opt/venv/csagent/bin/python3 (found version "3.12.3") found components: Interpreter 
+[0.615s] -- Found rosidl_default_generators: 1.6.0 (/opt/ros/jazzy/share/rosidl_default_generators/cmake)
+[0.628s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.707s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.778s] -- Found rosidl_adapter: 4.6.6 (/opt/ros/jazzy/share/rosidl_adapter/cmake)
+[0.930s] [31mCMake Error at /opt/ros/jazzy/share/rosidl_adapter/cmake/rosidl_adapt_interfaces.cmake:57 (message):
+[0.930s]   execute_process(/opt/venv/csagent/bin/python3 -m rosidl_adapter
+[0.930s]   --package-name waffle_agent_msgs --arguments-file
+[0.930s]   /app/src/build/waffle_agent_msgs/rosidl_adapter__arguments__waffle_agent_msgs.json
+[0.930s]   --output-dir
+[0.930s]   /app/src/build/waffle_agent_msgs/rosidl_adapter/waffle_agent_msgs
+[0.930s]   --output-file
+[0.930s]   /app/src/build/waffle_agent_msgs/rosidl_adapter/waffle_agent_msgs.idls)
+[0.930s]   returned error code 1:
+[0.930s] 
+[0.931s]   Traceback (most recent call last):
+[0.931s] 
+[0.931s]     File "<frozen runpy>", line 198, in _run_module_as_main
+[0.931s]     File "<frozen runpy>", line 88, in _run_code
+[0.931s]     File "/opt/ros/jazzy/lib/python3.12/site-packages/rosidl_adapter/__main__.py", line 19, in <module>
+[0.931s]       sys.exit(main())
+[0.931s]                ^^^^^^
+[0.931s]     File "/opt/ros/jazzy/lib/python3.12/site-packages/rosidl_adapter/main.py", line 53, in main
+[0.931s]       abs_idl_file = convert_to_idl(
+[0.931s]                      ^^^^^^^^^^^^^^^
+[0.931s]     File "/opt/ros/jazzy/lib/python3.12/site-packages/rosidl_adapter/__init__.py", line 18, in convert_to_idl
+[0.931s]       from rosidl_adapter.msg import convert_msg_to_idl
+[0.931s]     File "/opt/ros/jazzy/lib/python3.12/site-packages/rosidl_adapter/msg/__init__.py", line 16, in <module>
+[0.931s]       from rosidl_adapter.resource import expand_template
+[0.931s]     File "/opt/ros/jazzy/lib/python3.12/site-packages/rosidl_adapter/resource/__init__.py", line 19, in <module>
+[0.931s]       import em
+[0.931s] 
+[0.931s]   ModuleNotFoundError: No module named 'em'
+[0.931s] 
+[0.931s] Call Stack (most recent call first):
+[0.931s]   /opt/ros/jazzy/share/rosidl_cmake/cmake/rosidl_generate_interfaces.cmake:132 (rosidl_adapt_interfaces)
+[0.932s]   CMakeLists.txt:11 (rosidl_generate_interfaces)
+[0.932s] 
+[0.932s] [0m
+[0.932s] -- Configuring incomplete, errors occurred!
+[0.936s] Invoked command in '/app/src/build/waffle_agent_msgs' returned '1': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy PS1=${debian_chroot:+($debian_chroot)}\u@\h:\w\$ /usr/bin/cmake /app/src/waffle_agent_msgs -DCMAKE_INSTALL_PREFIX=/app/src/install/waffle_agent_msgs
