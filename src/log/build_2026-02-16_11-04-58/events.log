@@ -1,4 +1,0 @@
-[0.000000] (-) TimerEvent: {}
-[0.000178] (-) JobUnselected: {'identifier': 'waffle_agent'}
-[0.000273] (-) JobUnselected: {'identifier': 'waffle_agent_msgs'}
-[0.000407] (-) EventReactorShutdown: {}

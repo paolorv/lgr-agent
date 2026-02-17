@@ -1,1 +1,0 @@
-/app/src/agilex_scout/agilex_scout_nav2/launch/navigation.launch.py

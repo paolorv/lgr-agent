@@ -1,8 +1,0 @@
-[0.000000] (-) TimerEvent: {}
-[0.000096] (-) JobUnselected: {'identifier': 'agilex_scout_description'}
-[0.000126] (-) JobUnselected: {'identifier': 'agilex_scout_nav2'}
-[0.000141] (-) JobUnselected: {'identifier': 'gazebo_worlds'}
-[0.000154] (-) JobUnselected: {'identifier': 'simulation'}
-[0.000168] (-) JobUnselected: {'identifier': 'waffle_agent'}
-[0.000178] (-) JobUnselected: {'identifier': 'waffle_agent_msgs'}
-[0.000324] (-) EventReactorShutdown: {}
