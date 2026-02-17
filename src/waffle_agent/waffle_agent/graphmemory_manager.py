@@ -24,7 +24,7 @@ class BatchSemanticGraph(Node):
     def __init__(self):
         super().__init__('batch_semantic_graph')
 
-        self.declare_parameter("pose_topic", "/odom")
+        self.declare_parameter("pose_topic", "/odometry")
         self.declare_parameter("label_topic", "/labels")
         self.declare_parameter("top_k_return", 5)  # Objects returned from sevice calls
         
@@ -101,6 +101,7 @@ class BatchSemanticGraph(Node):
             
             # 3. Update Rviz
             #self.publish_markers()
+        else: self.get_logger().error("No odometry received")
 
     def process_batch(self, labels_in_frame):
         """

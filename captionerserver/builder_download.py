@@ -1,7 +1,7 @@
 from transformers import AutoModelForCausalLM, AutoProcessor
 import torch
 
-model_id = "microsoft/Florence-2-base"
+model_id = "microsoft/Florence-2-large"
 print(f"Pre-downloading {model_id}...")
 
 # Download model and processor to default cache directory (~/.cache/huggingface)
