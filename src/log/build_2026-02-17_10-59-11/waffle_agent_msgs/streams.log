@@ -1,0 +1,25 @@
+[0.019s] Invoking command in '/app/src/build/waffle_agent_msgs': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy PS1=(csagent) ${debian_chroot:+($debian_chroot)}\u@\h:\w\$ VIRTUAL_ENV_PROMPT=(csagent) /usr/bin/cmake /app/src/waffle_agent_msgs -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/app/src/install/waffle_agent_msgs
+[0.030s] -- Found ament_cmake: 2.5.4 (/opt/ros/jazzy/share/ament_cmake/cmake)
+[0.046s] -- Found Python3: /opt/venv/csagent/bin/python3 (found version "3.12.3") found components: Interpreter 
+[0.101s] -- Override CMake install command with custom implementation using symlinks instead of copying resources
+[0.109s] -- Found rosidl_default_generators: 1.6.0 (/opt/ros/jazzy/share/rosidl_default_generators/cmake)
+[0.110s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.139s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.161s] -- Found rosidl_adapter: 4.6.6 (/opt/ros/jazzy/share/rosidl_adapter/cmake)
+[0.358s] -- Found ament_cmake_ros: 0.12.0 (/opt/ros/jazzy/share/ament_cmake_ros/cmake)
+[0.421s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.497s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.498s] -- Found python_cmake_module: 0.11.1 (/opt/ros/jazzy/share/python_cmake_module/cmake)
+[0.733s] -- Found Python3: /opt/venv/csagent/bin/python3 (found version "3.12.3") found components: Interpreter Development NumPy Development.Module Development.Embed 
+[0.750s] -- Configuring done (0.7s)
+[0.781s] -- Generating done (0.0s)
+[0.790s] -- Build files have been written to: /app/src/build/waffle_agent_msgs
+[0.797s] Invoked command in '/app/src/build/waffle_agent_msgs' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy PS1=(csagent) ${debian_chroot:+($debian_chroot)}\u@\h:\w\$ VIRTUAL_ENV_PROMPT=(csagent) /usr/bin/cmake /app/src/waffle_agent_msgs -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/app/src/install/waffle_agent_msgs
+[0.798s] Invoking command in '/app/src/build/waffle_agent_msgs': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy PS1=(csagent) ${debian_chroot:+($debian_chroot)}\u@\h:\w\$ VIRTUAL_ENV_PROMPT=(csagent) /usr/bin/cmake --build /app/src/build/waffle_agent_msgs -- -j16 -l16
+[0.840s] failed to create symbolic link '/app/src/build/waffle_agent_msgs/ament_cmake_python/waffle_agent_msgs/waffle_agent_msgs' because existing path cannot be removed: Is a directory
+[0.841s] gmake[2]: *** [CMakeFiles/ament_cmake_python_symlink_waffle_agent_msgs.dir/build.make:70: CMakeFiles/ament_cmake_python_symlink_waffle_agent_msgs] Error 1
+[0.841s] [  1%] Built target waffle_agent_msgs__rosidl_generator_type_description
+[0.841s] gmake[1]: *** [CMakeFiles/Makefile2:452: CMakeFiles/ament_cmake_python_symlink_waffle_agent_msgs.dir/all] Error 2
+[0.841s] gmake[1]: *** Waiting for unfinished jobs....
+[0.842s] gmake: *** [Makefile:146: all] Error 2
+[0.852s] Invoked command in '/app/src/build/waffle_agent_msgs' returned '2': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy PS1=(csagent) ${debian_chroot:+($debian_chroot)}\u@\h:\w\$ VIRTUAL_ENV_PROMPT=(csagent) /usr/bin/cmake --build /app/src/build/waffle_agent_msgs -- -j16 -l16

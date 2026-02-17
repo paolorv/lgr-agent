@@ -1,0 +1,65 @@
+[0.012s] Invoking command in '/app/src/build/gazebo_worlds': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy PS1=(csagent) ${debian_chroot:+($debian_chroot)}\u@\h:\w\$ VIRTUAL_ENV_PROMPT=(csagent) /usr/bin/cmake /app/src/simulation_pkgs/gazebo_worlds -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/app/src/install/gazebo_worlds
+[0.052s] -- The C compiler identification is GNU 13.3.0
+[0.095s] -- The CXX compiler identification is GNU 13.3.0
+[0.108s] -- Detecting C compiler ABI info
+[0.179s] -- Detecting C compiler ABI info - done
+[0.187s] -- Check for working C compiler: /usr/bin/cc - skipped
+[0.187s] -- Detecting C compile features
+[0.187s] -- Detecting C compile features - done
+[0.194s] -- Detecting CXX compiler ABI info
+[0.273s] -- Detecting CXX compiler ABI info - done
+[0.280s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[0.281s] -- Detecting CXX compile features
+[0.281s] -- Detecting CXX compile features - done
+[0.287s] -- Found ament_cmake: 2.5.4 (/opt/ros/jazzy/share/ament_cmake/cmake)
+[0.382s] -- Found Python3: /opt/venv/csagent/bin/python3 (found version "3.12.3") found components: Interpreter 
+[0.436s] -- Override CMake install command with custom implementation using symlinks instead of copying resources
+[0.594s] -- Configuring done (0.6s)
+[0.596s] -- Generating done (0.0s)
+[0.598s] -- Build files have been written to: /app/src/build/gazebo_worlds
+[0.607s] Invoked command in '/app/src/build/gazebo_worlds' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy PS1=(csagent) ${debian_chroot:+($debian_chroot)}\u@\h:\w\$ VIRTUAL_ENV_PROMPT=(csagent) /usr/bin/cmake /app/src/simulation_pkgs/gazebo_worlds -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/app/src/install/gazebo_worlds
+[0.608s] Invoking command in '/app/src/build/gazebo_worlds': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy PS1=(csagent) ${debian_chroot:+($debian_chroot)}\u@\h:\w\$ VIRTUAL_ENV_PROMPT=(csagent) /usr/bin/cmake --build /app/src/build/gazebo_worlds -- -j16 -l16
+[0.648s] Invoked command in '/app/src/build/gazebo_worlds' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy PS1=(csagent) ${debian_chroot:+($debian_chroot)}\u@\h:\w\$ VIRTUAL_ENV_PROMPT=(csagent) /usr/bin/cmake --build /app/src/build/gazebo_worlds -- -j16 -l16
+[0.657s] Invoking command in '/app/src/build/gazebo_worlds': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy PS1=(csagent) ${debian_chroot:+($debian_chroot)}\u@\h:\w\$ VIRTUAL_ENV_PROMPT=(csagent) /usr/bin/cmake --install /app/src/build/gazebo_worlds
+[0.668s] -- Install configuration: ""
+[0.668s] -- Execute custom install script
+[0.669s] -- Symlinking: /app/src/install/gazebo_worlds/share/gazebo_worlds/agri/FlatTerrain/materials/textures/grass_dry.png
+[0.678s] -- Symlinking: /app/src/install/gazebo_worlds/share/gazebo_worlds/agri/FlatTerrain/materials/textures/grass_repeated.png
+[0.688s] -- Symlinking: /app/src/install/gazebo_worlds/share/gazebo_worlds/agri/FlatTerrain/model.config
+[0.697s] -- Symlinking: /app/src/install/gazebo_worlds/share/gazebo_worlds/agri/FlatTerrain/model.sdf
+[0.705s] -- Symlinking: /app/src/install/gazebo_worlds/share/gazebo_worlds/agri/PineTree/materials/textures/bark_diffuse.png
+[0.713s] -- Symlinking: /app/src/install/gazebo_worlds/share/gazebo_worlds/agri/PineTree/materials/textures/branch_2_diffuse.png
+[0.720s] -- Symlinking: /app/src/install/gazebo_worlds/share/gazebo_worlds/agri/PineTree/meshes/pine_tree.dae
+[0.728s] -- Symlinking: /app/src/install/gazebo_worlds/share/gazebo_worlds/agri/PineTree/model.config
+[0.735s] -- Symlinking: /app/src/install/gazebo_worlds/share/gazebo_worlds/agri/PineTree/model.sdf
+[0.743s] -- Symlinking: /app/src/install/gazebo_worlds/share/gazebo_worlds/agri/open_field_world.sdf
+[0.750s] -- Symlinking: /app/src/install/gazebo_worlds/share/gazebo_worlds/agri/tomato_obfuscated/materials/textures/AG15blo1.png
+[0.758s] -- Symlinking: /app/src/install/gazebo_worlds/share/gazebo_worlds/agri/tomato_obfuscated/materials/textures/AG15blo2.png
+[0.766s] -- Symlinking: /app/src/install/gazebo_worlds/share/gazebo_worlds/agri/tomato_obfuscated/materials/textures/AG15blo3.png
+[0.773s] -- Symlinking: /app/src/install/gazebo_worlds/share/gazebo_worlds/agri/tomato_obfuscated/materials/textures/AG15brn1.png
+[0.780s] -- Symlinking: /app/src/install/gazebo_worlds/share/gazebo_worlds/agri/tomato_obfuscated/materials/textures/AG15frt1.png
+[0.788s] -- Symlinking: /app/src/install/gazebo_worlds/share/gazebo_worlds/agri/tomato_obfuscated/materials/textures/AG15frt2.png
+[0.795s] -- Symlinking: /app/src/install/gazebo_worlds/share/gazebo_worlds/agri/tomato_obfuscated/materials/textures/AG15frt3.png
+[0.802s] -- Symlinking: /app/src/install/gazebo_worlds/share/gazebo_worlds/agri/tomato_obfuscated/materials/textures/AG15frt4.png
+[0.810s] -- Symlinking: /app/src/install/gazebo_worlds/share/gazebo_worlds/agri/tomato_obfuscated/materials/textures/AG15lef1.png
+[0.818s] -- Symlinking: /app/src/install/gazebo_worlds/share/gazebo_worlds/agri/tomato_obfuscated/materials/textures/AG15lef2.png
+[0.825s] -- Symlinking: /app/src/install/gazebo_worlds/share/gazebo_worlds/agri/tomato_obfuscated/meshes/.gitignore
+[0.834s] -- Symlinking: /app/src/install/gazebo_worlds/share/gazebo_worlds/agri/tomato_obfuscated/meshes/tomato.dae
+[0.840s] -- Symlinking: /app/src/install/gazebo_worlds/share/gazebo_worlds/agri/tomato_obfuscated/model.config
+[0.848s] -- Symlinking: /app/src/install/gazebo_worlds/share/gazebo_worlds/agri/tomato_obfuscated/model.sdf
+[0.855s] -- Symlinking: /app/src/install/gazebo_worlds/share/ament_index/resource_index/package_run_dependencies/gazebo_worlds
+[0.863s] -- Symlinking: /app/src/install/gazebo_worlds/share/ament_index/resource_index/parent_prefix_path/gazebo_worlds
+[0.870s] -- Symlinking: /app/src/install/gazebo_worlds/share/gazebo_worlds/environment/ament_prefix_path.sh
+[0.877s] -- Symlinking: /app/src/install/gazebo_worlds/share/gazebo_worlds/environment/ament_prefix_path.dsv
+[0.884s] -- Symlinking: /app/src/install/gazebo_worlds/share/gazebo_worlds/environment/path.sh
+[0.892s] -- Symlinking: /app/src/install/gazebo_worlds/share/gazebo_worlds/environment/path.dsv
+[0.899s] -- Symlinking: /app/src/install/gazebo_worlds/share/gazebo_worlds/local_setup.bash
+[0.906s] -- Symlinking: /app/src/install/gazebo_worlds/share/gazebo_worlds/local_setup.sh
+[0.914s] -- Symlinking: /app/src/install/gazebo_worlds/share/gazebo_worlds/local_setup.zsh
+[0.921s] -- Symlinking: /app/src/install/gazebo_worlds/share/gazebo_worlds/local_setup.dsv
+[0.928s] -- Symlinking: /app/src/install/gazebo_worlds/share/gazebo_worlds/package.dsv
+[0.936s] -- Symlinking: /app/src/install/gazebo_worlds/share/ament_index/resource_index/packages/gazebo_worlds
+[0.944s] -- Symlinking: /app/src/install/gazebo_worlds/share/gazebo_worlds/cmake/ament_cmake_export_dependencies-extras.cmake
+[0.951s] -- Symlinking: /app/src/install/gazebo_worlds/share/gazebo_worlds/cmake/gazebo_worldsConfig.cmake
+[0.959s] -- Symlinking: /app/src/install/gazebo_worlds/share/gazebo_worlds/cmake/gazebo_worldsConfig-version.cmake
+[0.966s] -- Symlinking: /app/src/install/gazebo_worlds/share/gazebo_worlds/package.xml

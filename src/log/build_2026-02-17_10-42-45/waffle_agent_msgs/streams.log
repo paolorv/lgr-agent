@@ -1,0 +1,311 @@
+[0.011s] Invoking command in '/app/src/build/waffle_agent_msgs': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy PS1=(csagent) ${debian_chroot:+($debian_chroot)}\u@\h:\w\$ VIRTUAL_ENV_PROMPT=(csagent) /usr/bin/cmake /app/src/waffle_agent_msgs -DCMAKE_INSTALL_PREFIX=/app/src/install/waffle_agent_msgs
+[0.116s] -- The C compiler identification is GNU 13.3.0
+[0.259s] -- The CXX compiler identification is GNU 13.3.0
+[0.276s] -- Detecting C compiler ABI info
+[0.367s] -- Detecting C compiler ABI info - done
+[0.373s] -- Check for working C compiler: /usr/bin/cc - skipped
+[0.373s] -- Detecting C compile features
+[0.374s] -- Detecting C compile features - done
+[0.382s] -- Detecting CXX compiler ABI info
+[0.465s] -- Detecting CXX compiler ABI info - done
+[0.472s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[0.472s] -- Detecting CXX compile features
+[0.472s] -- Detecting CXX compile features - done
+[0.484s] -- Found ament_cmake: 2.5.4 (/opt/ros/jazzy/share/ament_cmake/cmake)
+[0.582s] -- Found Python3: /opt/venv/csagent/bin/python3 (found version "3.12.3") found components: Interpreter 
+[0.753s] -- Found rosidl_default_generators: 1.6.0 (/opt/ros/jazzy/share/rosidl_default_generators/cmake)
+[0.765s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.852s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.922s] -- Found rosidl_adapter: 4.6.6 (/opt/ros/jazzy/share/rosidl_adapter/cmake)
+[1.361s] -- Found ament_cmake_ros: 0.12.0 (/opt/ros/jazzy/share/ament_cmake_ros/cmake)
+[1.652s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[2.060s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[2.068s] -- Found python_cmake_module: 0.11.1 (/opt/ros/jazzy/share/python_cmake_module/cmake)
+[2.160s] -- Found PythonExtra: /opt/venv/csagent/bin/python3  
+[2.510s] -- Found Python3: /opt/venv/csagent/bin/python3 (found version "3.12.3") found components: Interpreter Development NumPy Development.Module Development.Embed 
+[2.546s] -- Configuring done (2.5s)
+[2.580s] -- Generating done (0.0s)
+[2.590s] -- Build files have been written to: /app/src/build/waffle_agent_msgs
+[2.596s] Invoked command in '/app/src/build/waffle_agent_msgs' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy PS1=(csagent) ${debian_chroot:+($debian_chroot)}\u@\h:\w\$ VIRTUAL_ENV_PROMPT=(csagent) /usr/bin/cmake /app/src/waffle_agent_msgs -DCMAKE_INSTALL_PREFIX=/app/src/install/waffle_agent_msgs
+[2.597s] Invoking command in '/app/src/build/waffle_agent_msgs': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy PS1=(csagent) ${debian_chroot:+($debian_chroot)}\u@\h:\w\$ VIRTUAL_ENV_PROMPT=(csagent) /usr/bin/cmake --build /app/src/build/waffle_agent_msgs -- -j16 -l16
+[2.645s] [  1%] [34m[1mGenerating type hashes for ROS interfaces[0m
+[2.652s] [  1%] Built target ament_cmake_python_copy_waffle_agent_msgs
+[2.858s] running egg_info
+[2.864s] [  1%] Built target waffle_agent_msgs__rosidl_generator_type_description
+[2.872s] creating waffle_agent_msgs.egg-info
+[2.872s] writing waffle_agent_msgs.egg-info/PKG-INFO
+[2.872s] writing dependency_links to waffle_agent_msgs.egg-info/dependency_links.txt
+[2.872s] writing top-level names to waffle_agent_msgs.egg-info/top_level.txt
+[2.872s] writing manifest file 'waffle_agent_msgs.egg-info/SOURCES.txt'
+[2.873s] [  3%] [34m[1mGenerating C code for ROS interfaces[0m
+[2.884s] [  5%] [34m[1mGenerating C++ code for ROS interfaces[0m
+[2.914s] reading manifest file 'waffle_agent_msgs.egg-info/SOURCES.txt'
+[2.915s] writing manifest file 'waffle_agent_msgs.egg-info/SOURCES.txt'
+[2.940s] [  5%] Built target ament_cmake_python_build_waffle_agent_msgs_egg
+[3.202s] [  5%] Built target waffle_agent_msgs__cpp
+[3.261s] [ 12%] [32mBuilding C object CMakeFiles/waffle_agent_msgs__rosidl_generator_c.dir/rosidl_generator_c/waffle_agent_msgs/msg/detail/graph_result__type_support.c.o[0m
+[3.261s] [ 12%] [32mBuilding C object CMakeFiles/waffle_agent_msgs__rosidl_generator_c.dir/rosidl_generator_c/waffle_agent_msgs/srv/detail/search_by_label__functions.c.o[0m
+[3.261s] [ 12%] [32mBuilding C object CMakeFiles/waffle_agent_msgs__rosidl_generator_c.dir/rosidl_generator_c/waffle_agent_msgs/srv/detail/search_by_label__description.c.o[0m
+[3.262s] [ 14%] [32mBuilding C object CMakeFiles/waffle_agent_msgs__rosidl_generator_c.dir/rosidl_generator_c/waffle_agent_msgs/srv/detail/search_by_label__type_support.c.o[0m
+[3.262s] [ 16%] [32mBuilding C object CMakeFiles/waffle_agent_msgs__rosidl_generator_c.dir/rosidl_generator_c/waffle_agent_msgs/srv/detail/search_by_position__description.c.o[0m
+[3.262s] [ 18%] [32mBuilding C object CMakeFiles/waffle_agent_msgs__rosidl_generator_c.dir/rosidl_generator_c/waffle_agent_msgs/srv/detail/search_by_position__functions.c.o[0m
+[3.263s] [ 20%] [32mBuilding C object CMakeFiles/waffle_agent_msgs__rosidl_generator_c.dir/rosidl_generator_c/waffle_agent_msgs/srv/detail/search_by_position__type_support.c.o[0m
+[3.263s] [ 20%] [32mBuilding C object CMakeFiles/waffle_agent_msgs__rosidl_generator_c.dir/rosidl_generator_c/waffle_agent_msgs/msg/detail/graph_result__description.c.o[0m
+[3.265s] [ 22%] [32mBuilding C object CMakeFiles/waffle_agent_msgs__rosidl_generator_c.dir/rosidl_generator_c/waffle_agent_msgs/msg/detail/graph_result__functions.c.o[0m
+[3.348s] [ 24%] [32m[1mLinking C shared library libwaffle_agent_msgs__rosidl_generator_c.so[0m
+[3.386s] [ 24%] Built target waffle_agent_msgs__rosidl_generator_c
+[3.396s] [ 29%] [34m[1mGenerating C type support for eProsima Fast-RTPS[0m
+[3.397s] [ 29%] [34m[1mGenerating C++ type support dispatch for ROS interfaces[0m
+[3.397s] [ 31%] [34m[1mGenerating C type support dispatch for ROS interfaces[0m
+[3.397s] [ 33%] [34m[1mGenerating C introspection for ROS interfaces[0m
+[3.397s] [ 33%] [34m[1mGenerating C++ type support for eProsima Fast-RTPS[0m
+[3.397s] [ 35%] [34m[1mGenerating C++ introspection for ROS interfaces[0m
+[3.630s] [ 40%] [32mBuilding CXX object CMakeFiles/waffle_agent_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/waffle_agent_msgs/msg/graph_result__type_support.cpp.o[0m
+[3.630s] [ 40%] [32mBuilding CXX object CMakeFiles/waffle_agent_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/waffle_agent_msgs/srv/search_by_label__type_support.cpp.o[0m
+[3.631s] [ 40%] [32mBuilding CXX object CMakeFiles/waffle_agent_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/waffle_agent_msgs/srv/search_by_position__type_support.cpp.o[0m
+[3.631s] [ 42%] [32mBuilding CXX object CMakeFiles/waffle_agent_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/waffle_agent_msgs/msg/graph_result__type_support.cpp.o[0m
+[3.631s] [ 44%] [32mBuilding CXX object CMakeFiles/waffle_agent_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/waffle_agent_msgs/srv/search_by_label__type_support.cpp.o[0m
+[3.632s] [ 46%] [32mBuilding CXX object CMakeFiles/waffle_agent_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/waffle_agent_msgs/srv/search_by_position__type_support.cpp.o[0m
+[3.699s] [ 50%] [32mBuilding C object CMakeFiles/waffle_agent_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/waffle_agent_msgs/srv/detail/search_by_label__type_support.c.o[0m
+[3.700s] [ 50%] [32m[1mLinking CXX shared library libwaffle_agent_msgs__rosidl_typesupport_c.so[0m
+[3.700s] [ 51%] [32mBuilding C object CMakeFiles/waffle_agent_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/waffle_agent_msgs/srv/detail/search_by_position__type_support.c.o[0m
+[3.702s] [ 53%] [32mBuilding C object CMakeFiles/waffle_agent_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/waffle_agent_msgs/msg/detail/graph_result__type_support.c.o[0m
+[3.707s] [ 55%] [32mBuilding CXX object CMakeFiles/waffle_agent_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/waffle_agent_msgs/srv/detail/search_by_position__type_support.cpp.o[0m
+[3.707s] [ 57%] [32mBuilding CXX object CMakeFiles/waffle_agent_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/waffle_agent_msgs/msg/detail/graph_result__type_support.cpp.o[0m
+[3.708s] [ 59%] [32mBuilding CXX object CMakeFiles/waffle_agent_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/waffle_agent_msgs/srv/detail/search_by_label__type_support.cpp.o[0m
+[3.758s] [ 61%] [32m[1mLinking C shared library libwaffle_agent_msgs__rosidl_typesupport_introspection_c.so[0m
+[3.763s] [ 61%] Built target waffle_agent_msgs__rosidl_typesupport_c
+[3.789s] [ 62%] [32mBuilding CXX object CMakeFiles/waffle_agent_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/waffle_agent_msgs/srv/detail/dds_fastrtps/search_by_label__type_support.cpp.o[0m
+[3.790s] [ 64%] [32mBuilding CXX object CMakeFiles/waffle_agent_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/waffle_agent_msgs/msg/detail/dds_fastrtps/graph_result__type_support.cpp.o[0m
+[3.790s] [ 66%] [32mBuilding CXX object CMakeFiles/waffle_agent_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/waffle_agent_msgs/srv/detail/dds_fastrtps/search_by_position__type_support.cpp.o[0m
+[3.792s] [ 66%] Built target waffle_agent_msgs__rosidl_typesupport_introspection_c
+[3.801s] [ 68%] [32mBuilding CXX object CMakeFiles/waffle_agent_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/waffle_agent_msgs/srv/detail/search_by_label__type_support_c.cpp.o[0m
+[3.801s] [ 70%] [32mBuilding CXX object CMakeFiles/waffle_agent_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/waffle_agent_msgs/msg/detail/graph_result__type_support_c.cpp.o[0m
+[3.801s] [ 72%] [32mBuilding CXX object CMakeFiles/waffle_agent_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/waffle_agent_msgs/srv/detail/search_by_position__type_support_c.cpp.o[0m
+[4.168s] [ 74%] [32m[1mLinking CXX shared library libwaffle_agent_msgs__rosidl_typesupport_cpp.so[0m
+[4.254s] [ 75%] [32m[1mLinking CXX shared library libwaffle_agent_msgs__rosidl_typesupport_introspection_cpp.so[0m
+[4.257s] [ 75%] Built target waffle_agent_msgs__rosidl_typesupport_cpp
+[4.331s] [ 77%] [32m[1mLinking CXX shared library libwaffle_agent_msgs__rosidl_typesupport_fastrtps_c.so[0m
+[4.331s] [ 77%] Built target waffle_agent_msgs__rosidl_typesupport_introspection_cpp
+[4.396s] [ 77%] Built target waffle_agent_msgs__rosidl_typesupport_fastrtps_c
+[4.486s] [ 79%] [32m[1mLinking CXX shared library libwaffle_agent_msgs__rosidl_typesupport_fastrtps_cpp.so[0m
+[4.551s] [ 79%] Built target waffle_agent_msgs__rosidl_typesupport_fastrtps_cpp
+[4.571s] [ 79%] Built target waffle_agent_msgs
+[4.591s] [ 81%] [34m[1mGenerating Python code for ROS interfaces[0m
+[4.991s] [ 81%] Built target waffle_agent_msgs__py
+[5.012s] [ 87%] [32mBuilding C object CMakeFiles/waffle_agent_msgs__rosidl_generator_py.dir/rosidl_generator_py/waffle_agent_msgs/srv/_search_by_label_s.c.o[0m
+[5.012s] [ 87%] [32mBuilding C object CMakeFiles/waffle_agent_msgs__rosidl_generator_py.dir/rosidl_generator_py/waffle_agent_msgs/srv/_search_by_position_s.c.o[0m
+[5.012s] [ 87%] [32mBuilding C object CMakeFiles/waffle_agent_msgs__rosidl_generator_py.dir/rosidl_generator_py/waffle_agent_msgs/msg/_graph_result_s.c.o[0m
+[5.167s] [ 88%] [32m[1mLinking C shared library libwaffle_agent_msgs__rosidl_generator_py.so[0m
+[5.205s] [ 88%] Built target waffle_agent_msgs__rosidl_generator_py
+[5.226s] [ 92%] [32mBuilding C object CMakeFiles/waffle_agent_msgs_s__rosidl_typesupport_introspection_c.dir/rosidl_generator_py/waffle_agent_msgs/_waffle_agent_msgs_s.ep.rosidl_typesupport_introspection_c.c.o[0m
+[5.226s] [ 92%] [32mBuilding C object CMakeFiles/waffle_agent_msgs_s__rosidl_typesupport_fastrtps_c.dir/rosidl_generator_py/waffle_agent_msgs/_waffle_agent_msgs_s.ep.rosidl_typesupport_fastrtps_c.c.o[0m
+[5.226s] [ 94%] [32mBuilding C object CMakeFiles/waffle_agent_msgs_s__rosidl_typesupport_c.dir/rosidl_generator_py/waffle_agent_msgs/_waffle_agent_msgs_s.ep.rosidl_typesupport_c.c.o[0m
+[5.339s] [100%] [32m[1mLinking C shared module rosidl_generator_py/waffle_agent_msgs/waffle_agent_msgs_s__rosidl_typesupport_introspection_c.so[0m
+[5.339s] [100%] [32m[1mLinking C shared module rosidl_generator_py/waffle_agent_msgs/waffle_agent_msgs_s__rosidl_typesupport_c.so[0m
+[5.339s] [100%] [32m[1mLinking C shared module rosidl_generator_py/waffle_agent_msgs/waffle_agent_msgs_s__rosidl_typesupport_fastrtps_c.so[0m
+[5.368s] [100%] Built target waffle_agent_msgs_s__rosidl_typesupport_introspection_c
+[5.368s] [100%] Built target waffle_agent_msgs_s__rosidl_typesupport_fastrtps_c
+[5.368s] [100%] Built target waffle_agent_msgs_s__rosidl_typesupport_c
+[5.380s] Invoked command in '/app/src/build/waffle_agent_msgs' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy PS1=(csagent) ${debian_chroot:+($debian_chroot)}\u@\h:\w\$ VIRTUAL_ENV_PROMPT=(csagent) /usr/bin/cmake --build /app/src/build/waffle_agent_msgs -- -j16 -l16
+[5.390s] Invoking command in '/app/src/build/waffle_agent_msgs': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy PS1=(csagent) ${debian_chroot:+($debian_chroot)}\u@\h:\w\$ VIRTUAL_ENV_PROMPT=(csagent) /usr/bin/cmake --install /app/src/build/waffle_agent_msgs
+[5.398s] -- Install configuration: ""
+[5.398s] -- Installing: /app/src/install/waffle_agent_msgs/share/ament_index/resource_index/rosidl_interfaces/waffle_agent_msgs
+[5.398s] -- Installing: /app/src/install/waffle_agent_msgs/share/waffle_agent_msgs/msg/GraphResult.json
+[5.399s] -- Installing: /app/src/install/waffle_agent_msgs/share/waffle_agent_msgs/srv/SearchByLabel.json
+[5.399s] -- Installing: /app/src/install/waffle_agent_msgs/share/waffle_agent_msgs/srv/SearchByPosition.json
+[5.399s] -- Up-to-date: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs
+[5.399s] -- Up-to-date: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/msg
+[5.399s] -- Up-to-date: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/msg/detail
+[5.399s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/msg/detail/graph_result__functions.c
+[5.399s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/msg/detail/graph_result__struct.h
+[5.399s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/msg/detail/graph_result__functions.h
+[5.399s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/msg/detail/graph_result__description.c
+[5.400s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/msg/detail/graph_result__type_support.c
+[5.400s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/msg/detail/graph_result__type_support.h
+[5.400s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/msg/rosidl_generator_c__visibility_control.h
+[5.400s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/msg/graph_result.h
+[5.400s] -- Up-to-date: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/srv
+[5.400s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/srv/search_by_label.h
+[5.400s] -- Up-to-date: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/srv/detail
+[5.400s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/srv/detail/search_by_label__functions.h
+[5.400s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/srv/detail/search_by_label__struct.h
+[5.401s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/srv/detail/search_by_position__functions.h
+[5.401s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/srv/detail/search_by_position__type_support.h
+[5.401s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/srv/detail/search_by_position__type_support.c
+[5.401s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/srv/detail/search_by_label__type_support.c
+[5.401s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/srv/detail/search_by_label__functions.c
+[5.401s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/srv/detail/search_by_position__struct.h
+[5.402s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/srv/detail/search_by_label__type_support.h
+[5.402s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/srv/detail/search_by_position__functions.c
+[5.402s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/srv/detail/search_by_position__description.c
+[5.402s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/srv/detail/search_by_label__description.c
+[5.402s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/srv/search_by_position.h
+[5.402s] -- Installing: /app/src/install/waffle_agent_msgs/share/waffle_agent_msgs/environment/library_path.sh
+[5.403s] -- Installing: /app/src/install/waffle_agent_msgs/share/waffle_agent_msgs/environment/library_path.dsv
+[5.403s] -- Installing: /app/src/install/waffle_agent_msgs/lib/libwaffle_agent_msgs__rosidl_generator_c.so
+[5.403s] -- Set non-toolchain portion of runtime path of "/app/src/install/waffle_agent_msgs/lib/libwaffle_agent_msgs__rosidl_generator_c.so" to ""
+[5.403s] -- Up-to-date: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs
+[5.403s] -- Up-to-date: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/msg
+[5.404s] -- Up-to-date: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/msg/detail
+[5.404s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/msg/detail/graph_result__rosidl_typesupport_fastrtps_c.h
+[5.404s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/msg/rosidl_typesupport_fastrtps_c__visibility_control.h
+[5.404s] -- Up-to-date: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/srv
+[5.404s] -- Up-to-date: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/srv/detail
+[5.404s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/srv/detail/search_by_label__rosidl_typesupport_fastrtps_c.h
+[5.404s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/srv/detail/search_by_position__rosidl_typesupport_fastrtps_c.h
+[5.404s] -- Installing: /app/src/install/waffle_agent_msgs/lib/libwaffle_agent_msgs__rosidl_typesupport_fastrtps_c.so
+[5.405s] -- Set non-toolchain portion of runtime path of "/app/src/install/waffle_agent_msgs/lib/libwaffle_agent_msgs__rosidl_typesupport_fastrtps_c.so" to ""
+[5.405s] -- Up-to-date: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs
+[5.405s] -- Up-to-date: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/msg
+[5.405s] -- Up-to-date: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/msg/detail
+[5.405s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/msg/detail/graph_result__rosidl_typesupport_introspection_c.h
+[5.405s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/msg/detail/graph_result__type_support.c
+[5.405s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/msg/rosidl_typesupport_introspection_c__visibility_control.h
+[5.405s] -- Up-to-date: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/srv
+[5.405s] -- Up-to-date: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/srv/detail
+[5.405s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/srv/detail/search_by_position__rosidl_typesupport_introspection_c.h
+[5.405s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/srv/detail/search_by_label__rosidl_typesupport_introspection_c.h
+[5.406s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/srv/detail/search_by_position__type_support.c
+[5.406s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/srv/detail/search_by_label__type_support.c
+[5.406s] -- Installing: /app/src/install/waffle_agent_msgs/lib/libwaffle_agent_msgs__rosidl_typesupport_introspection_c.so
+[5.406s] -- Set non-toolchain portion of runtime path of "/app/src/install/waffle_agent_msgs/lib/libwaffle_agent_msgs__rosidl_typesupport_introspection_c.so" to ""
+[5.406s] -- Installing: /app/src/install/waffle_agent_msgs/lib/libwaffle_agent_msgs__rosidl_typesupport_c.so
+[5.407s] -- Set non-toolchain portion of runtime path of "/app/src/install/waffle_agent_msgs/lib/libwaffle_agent_msgs__rosidl_typesupport_c.so" to ""
+[5.407s] -- Up-to-date: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs
+[5.407s] -- Up-to-date: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/msg
+[5.407s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/msg/graph_result.hpp
+[5.407s] -- Up-to-date: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/msg/detail
+[5.407s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/msg/detail/graph_result__traits.hpp
+[5.407s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/msg/detail/graph_result__type_support.hpp
+[5.408s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/msg/detail/graph_result__struct.hpp
+[5.408s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/msg/detail/graph_result__builder.hpp
+[5.408s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/msg/rosidl_generator_cpp__visibility_control.hpp
+[5.408s] -- Up-to-date: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/srv
+[5.408s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/srv/search_by_label.hpp
+[5.408s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/srv/search_by_position.hpp
+[5.408s] -- Up-to-date: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/srv/detail
+[5.408s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/srv/detail/search_by_position__type_support.hpp
+[5.409s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/srv/detail/search_by_label__type_support.hpp
+[5.409s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/srv/detail/search_by_position__traits.hpp
+[5.409s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/srv/detail/search_by_label__traits.hpp
+[5.409s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/srv/detail/search_by_position__struct.hpp
+[5.409s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/srv/detail/search_by_position__builder.hpp
+[5.409s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/srv/detail/search_by_label__builder.hpp
+[5.409s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/srv/detail/search_by_label__struct.hpp
+[5.410s] -- Up-to-date: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs
+[5.410s] -- Up-to-date: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/msg
+[5.410s] -- Up-to-date: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/msg/detail
+[5.410s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/msg/detail/graph_result__rosidl_typesupport_fastrtps_cpp.hpp
+[5.410s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/msg/detail/dds_fastrtps
+[5.410s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/msg/rosidl_typesupport_fastrtps_cpp__visibility_control.h
+[5.410s] -- Up-to-date: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/srv
+[5.410s] -- Up-to-date: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/srv/detail
+[5.410s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/srv/detail/search_by_position__rosidl_typesupport_fastrtps_cpp.hpp
+[5.410s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/srv/detail/search_by_label__rosidl_typesupport_fastrtps_cpp.hpp
+[5.410s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/srv/detail/dds_fastrtps
+[5.411s] -- Installing: /app/src/install/waffle_agent_msgs/lib/libwaffle_agent_msgs__rosidl_typesupport_fastrtps_cpp.so
+[5.411s] -- Set non-toolchain portion of runtime path of "/app/src/install/waffle_agent_msgs/lib/libwaffle_agent_msgs__rosidl_typesupport_fastrtps_cpp.so" to ""
+[5.411s] -- Up-to-date: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs
+[5.411s] -- Up-to-date: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/msg
+[5.411s] -- Up-to-date: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/msg/detail
+[5.411s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/msg/detail/graph_result__rosidl_typesupport_introspection_cpp.hpp
+[5.411s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/msg/detail/graph_result__type_support.cpp
+[5.412s] -- Up-to-date: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/srv
+[5.412s] -- Up-to-date: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/srv/detail
+[5.412s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/srv/detail/search_by_position__type_support.cpp
+[5.412s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/srv/detail/search_by_position__rosidl_typesupport_introspection_cpp.hpp
+[5.412s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/srv/detail/search_by_label__rosidl_typesupport_introspection_cpp.hpp
+[5.412s] -- Installing: /app/src/install/waffle_agent_msgs/include/waffle_agent_msgs/waffle_agent_msgs/srv/detail/search_by_label__type_support.cpp
+[5.412s] -- Installing: /app/src/install/waffle_agent_msgs/lib/libwaffle_agent_msgs__rosidl_typesupport_introspection_cpp.so
+[5.413s] -- Set non-toolchain portion of runtime path of "/app/src/install/waffle_agent_msgs/lib/libwaffle_agent_msgs__rosidl_typesupport_introspection_cpp.so" to ""
+[5.413s] -- Installing: /app/src/install/waffle_agent_msgs/lib/libwaffle_agent_msgs__rosidl_typesupport_cpp.so
+[5.414s] -- Set non-toolchain portion of runtime path of "/app/src/install/waffle_agent_msgs/lib/libwaffle_agent_msgs__rosidl_typesupport_cpp.so" to ""
+[5.414s] -- Installing: /app/src/install/waffle_agent_msgs/share/waffle_agent_msgs/environment/pythonpath.sh
+[5.414s] -- Installing: /app/src/install/waffle_agent_msgs/share/waffle_agent_msgs/environment/pythonpath.dsv
+[5.414s] -- Up-to-date: /app/src/install/waffle_agent_msgs/lib/python3.12/site-packages/waffle_agent_msgs-0.0.1-py3.12.egg-info
+[5.414s] -- Installing: /app/src/install/waffle_agent_msgs/lib/python3.12/site-packages/waffle_agent_msgs-0.0.1-py3.12.egg-info/PKG-INFO
+[5.415s] -- Installing: /app/src/install/waffle_agent_msgs/lib/python3.12/site-packages/waffle_agent_msgs-0.0.1-py3.12.egg-info/top_level.txt
+[5.415s] -- Installing: /app/src/install/waffle_agent_msgs/lib/python3.12/site-packages/waffle_agent_msgs-0.0.1-py3.12.egg-info/dependency_links.txt
+[5.415s] -- Installing: /app/src/install/waffle_agent_msgs/lib/python3.12/site-packages/waffle_agent_msgs-0.0.1-py3.12.egg-info/SOURCES.txt
+[5.415s] -- Up-to-date: /app/src/install/waffle_agent_msgs/lib/python3.12/site-packages/waffle_agent_msgs
+[5.415s] -- Up-to-date: /app/src/install/waffle_agent_msgs/lib/python3.12/site-packages/waffle_agent_msgs/msg
+[5.415s] -- Installing: /app/src/install/waffle_agent_msgs/lib/python3.12/site-packages/waffle_agent_msgs/msg/_graph_result_s.c
+[5.415s] -- Installing: /app/src/install/waffle_agent_msgs/lib/python3.12/site-packages/waffle_agent_msgs/msg/_graph_result.py
+[5.415s] -- Installing: /app/src/install/waffle_agent_msgs/lib/python3.12/site-packages/waffle_agent_msgs/msg/__init__.py
+[5.415s] -- Installing: /app/src/install/waffle_agent_msgs/lib/python3.12/site-packages/waffle_agent_msgs/_waffle_agent_msgs_s.ep.rosidl_typesupport_fastrtps_c.c
+[5.416s] -- Installing: /app/src/install/waffle_agent_msgs/lib/python3.12/site-packages/waffle_agent_msgs/_waffle_agent_msgs_s.ep.rosidl_typesupport_c.c
+[5.416s] -- Installing: /app/src/install/waffle_agent_msgs/lib/python3.12/site-packages/waffle_agent_msgs/waffle_agent_msgs_s__rosidl_typesupport_fastrtps_c.so
+[5.416s] -- Up-to-date: /app/src/install/waffle_agent_msgs/lib/python3.12/site-packages/waffle_agent_msgs/srv
+[5.416s] -- Installing: /app/src/install/waffle_agent_msgs/lib/python3.12/site-packages/waffle_agent_msgs/srv/_search_by_label.py
+[5.416s] -- Installing: /app/src/install/waffle_agent_msgs/lib/python3.12/site-packages/waffle_agent_msgs/srv/_search_by_label_s.c
+[5.416s] -- Installing: /app/src/install/waffle_agent_msgs/lib/python3.12/site-packages/waffle_agent_msgs/srv/_search_by_position_s.c
+[5.416s] -- Installing: /app/src/install/waffle_agent_msgs/lib/python3.12/site-packages/waffle_agent_msgs/srv/_search_by_position.py
+[5.417s] -- Installing: /app/src/install/waffle_agent_msgs/lib/python3.12/site-packages/waffle_agent_msgs/srv/__init__.py
+[5.417s] -- Installing: /app/src/install/waffle_agent_msgs/lib/python3.12/site-packages/waffle_agent_msgs/waffle_agent_msgs_s__rosidl_typesupport_c.so
+[5.417s] -- Installing: /app/src/install/waffle_agent_msgs/lib/python3.12/site-packages/waffle_agent_msgs/_waffle_agent_msgs_s.ep.rosidl_typesupport_introspection_c.c
+[5.417s] -- Installing: /app/src/install/waffle_agent_msgs/lib/python3.12/site-packages/waffle_agent_msgs/waffle_agent_msgs_s__rosidl_typesupport_introspection_c.so
+[5.417s] -- Installing: /app/src/install/waffle_agent_msgs/lib/python3.12/site-packages/waffle_agent_msgs/__init__.py
+[5.452s] Listing '/app/src/install/waffle_agent_msgs/lib/python3.12/site-packages/waffle_agent_msgs'...
+[5.452s] Compiling '/app/src/install/waffle_agent_msgs/lib/python3.12/site-packages/waffle_agent_msgs/__init__.py'...
+[5.452s] Listing '/app/src/install/waffle_agent_msgs/lib/python3.12/site-packages/waffle_agent_msgs/msg'...
+[5.452s] Compiling '/app/src/install/waffle_agent_msgs/lib/python3.12/site-packages/waffle_agent_msgs/msg/__init__.py'...
+[5.452s] Compiling '/app/src/install/waffle_agent_msgs/lib/python3.12/site-packages/waffle_agent_msgs/msg/_graph_result.py'...
+[5.452s] Listing '/app/src/install/waffle_agent_msgs/lib/python3.12/site-packages/waffle_agent_msgs/srv'...
+[5.452s] Compiling '/app/src/install/waffle_agent_msgs/lib/python3.12/site-packages/waffle_agent_msgs/srv/__init__.py'...
+[5.452s] Compiling '/app/src/install/waffle_agent_msgs/lib/python3.12/site-packages/waffle_agent_msgs/srv/_search_by_label.py'...
+[5.452s] Compiling '/app/src/install/waffle_agent_msgs/lib/python3.12/site-packages/waffle_agent_msgs/srv/_search_by_position.py'...
+[5.457s] -- Installing: /app/src/install/waffle_agent_msgs/lib/python3.12/site-packages/waffle_agent_msgs/waffle_agent_msgs_s__rosidl_typesupport_fastrtps_c.so
+[5.457s] -- Set non-toolchain portion of runtime path of "/app/src/install/waffle_agent_msgs/lib/python3.12/site-packages/waffle_agent_msgs/waffle_agent_msgs_s__rosidl_typesupport_fastrtps_c.so" to ""
+[5.458s] -- Installing: /app/src/install/waffle_agent_msgs/lib/python3.12/site-packages/waffle_agent_msgs/waffle_agent_msgs_s__rosidl_typesupport_introspection_c.so
+[5.458s] -- Set non-toolchain portion of runtime path of "/app/src/install/waffle_agent_msgs/lib/python3.12/site-packages/waffle_agent_msgs/waffle_agent_msgs_s__rosidl_typesupport_introspection_c.so" to ""
+[5.458s] -- Installing: /app/src/install/waffle_agent_msgs/lib/python3.12/site-packages/waffle_agent_msgs/waffle_agent_msgs_s__rosidl_typesupport_c.so
+[5.458s] -- Set non-toolchain portion of runtime path of "/app/src/install/waffle_agent_msgs/lib/python3.12/site-packages/waffle_agent_msgs/waffle_agent_msgs_s__rosidl_typesupport_c.so" to ""
+[5.458s] -- Installing: /app/src/install/waffle_agent_msgs/lib/libwaffle_agent_msgs__rosidl_generator_py.so
+[5.459s] -- Set non-toolchain portion of runtime path of "/app/src/install/waffle_agent_msgs/lib/libwaffle_agent_msgs__rosidl_generator_py.so" to ""
+[5.459s] -- Installing: /app/src/install/waffle_agent_msgs/share/waffle_agent_msgs/msg/GraphResult.idl
+[5.459s] -- Installing: /app/src/install/waffle_agent_msgs/share/waffle_agent_msgs/srv/SearchByLabel.idl
+[5.459s] -- Installing: /app/src/install/waffle_agent_msgs/share/waffle_agent_msgs/srv/SearchByPosition.idl
+[5.460s] -- Up-to-date: /app/src/install/waffle_agent_msgs/share/waffle_agent_msgs/msg/GraphResult.msg
+[5.460s] -- Up-to-date: /app/src/install/waffle_agent_msgs/share/waffle_agent_msgs/srv/SearchByLabel.srv
+[5.460s] -- Up-to-date: /app/src/install/waffle_agent_msgs/share/waffle_agent_msgs/srv/SearchByPosition.srv
+[5.460s] -- Installing: /app/src/install/waffle_agent_msgs/share/ament_index/resource_index/package_run_dependencies/waffle_agent_msgs
+[5.460s] -- Installing: /app/src/install/waffle_agent_msgs/share/ament_index/resource_index/parent_prefix_path/waffle_agent_msgs
+[5.460s] -- Installing: /app/src/install/waffle_agent_msgs/share/waffle_agent_msgs/environment/ament_prefix_path.sh
+[5.460s] -- Installing: /app/src/install/waffle_agent_msgs/share/waffle_agent_msgs/environment/ament_prefix_path.dsv
+[5.460s] -- Installing: /app/src/install/waffle_agent_msgs/share/waffle_agent_msgs/environment/path.sh
+[5.460s] -- Installing: /app/src/install/waffle_agent_msgs/share/waffle_agent_msgs/environment/path.dsv
+[5.461s] -- Installing: /app/src/install/waffle_agent_msgs/share/waffle_agent_msgs/local_setup.bash
+[5.461s] -- Installing: /app/src/install/waffle_agent_msgs/share/waffle_agent_msgs/local_setup.sh
+[5.461s] -- Installing: /app/src/install/waffle_agent_msgs/share/waffle_agent_msgs/local_setup.zsh
+[5.461s] -- Installing: /app/src/install/waffle_agent_msgs/share/waffle_agent_msgs/local_setup.dsv
+[5.461s] -- Installing: /app/src/install/waffle_agent_msgs/share/waffle_agent_msgs/package.dsv
+[5.461s] -- Installing: /app/src/install/waffle_agent_msgs/share/ament_index/resource_index/packages/waffle_agent_msgs
+[5.462s] -- Installing: /app/src/install/waffle_agent_msgs/share/waffle_agent_msgs/cmake/export_waffle_agent_msgs__rosidl_generator_cExport.cmake
+[5.462s] -- Installing: /app/src/install/waffle_agent_msgs/share/waffle_agent_msgs/cmake/export_waffle_agent_msgs__rosidl_generator_cExport-noconfig.cmake
+[5.462s] -- Installing: /app/src/install/waffle_agent_msgs/share/waffle_agent_msgs/cmake/export_waffle_agent_msgs__rosidl_typesupport_fastrtps_cExport.cmake
+[5.462s] -- Installing: /app/src/install/waffle_agent_msgs/share/waffle_agent_msgs/cmake/export_waffle_agent_msgs__rosidl_typesupport_fastrtps_cExport-noconfig.cmake
+[5.462s] -- Installing: /app/src/install/waffle_agent_msgs/share/waffle_agent_msgs/cmake/waffle_agent_msgs__rosidl_typesupport_introspection_cExport.cmake
+[5.463s] -- Installing: /app/src/install/waffle_agent_msgs/share/waffle_agent_msgs/cmake/waffle_agent_msgs__rosidl_typesupport_introspection_cExport-noconfig.cmake
+[5.463s] -- Installing: /app/src/install/waffle_agent_msgs/share/waffle_agent_msgs/cmake/waffle_agent_msgs__rosidl_typesupport_cExport.cmake
+[5.463s] -- Installing: /app/src/install/waffle_agent_msgs/share/waffle_agent_msgs/cmake/waffle_agent_msgs__rosidl_typesupport_cExport-noconfig.cmake
+[5.463s] -- Installing: /app/src/install/waffle_agent_msgs/share/waffle_agent_msgs/cmake/export_waffle_agent_msgs__rosidl_generator_cppExport.cmake
+[5.463s] -- Installing: /app/src/install/waffle_agent_msgs/share/waffle_agent_msgs/cmake/export_waffle_agent_msgs__rosidl_typesupport_fastrtps_cppExport.cmake
+[5.464s] -- Installing: /app/src/install/waffle_agent_msgs/share/waffle_agent_msgs/cmake/export_waffle_agent_msgs__rosidl_typesupport_fastrtps_cppExport-noconfig.cmake
+[5.464s] -- Installing: /app/src/install/waffle_agent_msgs/share/waffle_agent_msgs/cmake/waffle_agent_msgs__rosidl_typesupport_introspection_cppExport.cmake
+[5.464s] -- Installing: /app/src/install/waffle_agent_msgs/share/waffle_agent_msgs/cmake/waffle_agent_msgs__rosidl_typesupport_introspection_cppExport-noconfig.cmake
+[5.464s] -- Installing: /app/src/install/waffle_agent_msgs/share/waffle_agent_msgs/cmake/waffle_agent_msgs__rosidl_typesupport_cppExport.cmake
+[5.464s] -- Installing: /app/src/install/waffle_agent_msgs/share/waffle_agent_msgs/cmake/waffle_agent_msgs__rosidl_typesupport_cppExport-noconfig.cmake
+[5.464s] -- Installing: /app/src/install/waffle_agent_msgs/share/waffle_agent_msgs/cmake/export_waffle_agent_msgs__rosidl_generator_pyExport.cmake
+[5.465s] -- Installing: /app/src/install/waffle_agent_msgs/share/waffle_agent_msgs/cmake/export_waffle_agent_msgs__rosidl_generator_pyExport-noconfig.cmake
+[5.465s] -- Installing: /app/src/install/waffle_agent_msgs/share/waffle_agent_msgs/cmake/rosidl_cmake-extras.cmake
+[5.465s] -- Installing: /app/src/install/waffle_agent_msgs/share/waffle_agent_msgs/cmake/ament_cmake_export_dependencies-extras.cmake
+[5.465s] -- Installing: /app/src/install/waffle_agent_msgs/share/waffle_agent_msgs/cmake/ament_cmake_export_include_directories-extras.cmake
+[5.465s] -- Installing: /app/src/install/waffle_agent_msgs/share/waffle_agent_msgs/cmake/ament_cmake_export_libraries-extras.cmake
+[5.465s] -- Installing: /app/src/install/waffle_agent_msgs/share/waffle_agent_msgs/cmake/ament_cmake_export_targets-extras.cmake
+[5.466s] -- Installing: /app/src/install/waffle_agent_msgs/share/waffle_agent_msgs/cmake/rosidl_cmake_export_typesupport_targets-extras.cmake
+[5.466s] -- Installing: /app/src/install/waffle_agent_msgs/share/waffle_agent_msgs/cmake/rosidl_cmake_export_typesupport_libraries-extras.cmake
+[5.466s] -- Installing: /app/src/install/waffle_agent_msgs/share/waffle_agent_msgs/cmake/waffle_agent_msgsConfig.cmake
+[5.466s] -- Installing: /app/src/install/waffle_agent_msgs/share/waffle_agent_msgs/cmake/waffle_agent_msgsConfig-version.cmake
+[5.466s] -- Up-to-date: /app/src/install/waffle_agent_msgs/share/waffle_agent_msgs/package.xml
+[5.468s] Invoked command in '/app/src/build/waffle_agent_msgs' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy PS1=(csagent) ${debian_chroot:+($debian_chroot)}\u@\h:\w\$ VIRTUAL_ENV_PROMPT=(csagent) /usr/bin/cmake --install /app/src/build/waffle_agent_msgs
