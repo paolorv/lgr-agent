@@ -18,6 +18,10 @@ from visualization_msgs.msg import Marker, MarkerArray
 from waffle_agent_msgs.srv import SearchByLabel, SearchByPosition
 from waffle_agent_msgs.msg import GraphResult
 
+# Graph nodes visualization
+import matplotlib.pyplot as plt
+
+# Utils for Odometry formatting
 from waffle_agent.common_utils import format_pose_msg
 
 class BatchSemanticGraph(Node):
@@ -29,7 +33,7 @@ class BatchSemanticGraph(Node):
         self.declare_parameter("top_k_return", 5)  # Objects returned from sevice calls
         
         # Hyperparameters
-        self.SPATIAL_THRESH = 2.0  # Meters
+        self.SPATIAL_THRESH = 4.0  # Meters
         self.ANGLE_THRESH = np.radians(60) # +/- 60 degrees field of view
         self.SEMANTIC_THRESH = 0.75
 
@@ -70,6 +74,18 @@ class BatchSemanticGraph(Node):
             'search_by_position', 
             self.positionsearch_callback
         )
+
+        # ADDED VISUALIZATION OF NODES: Setup Matplotlib for real-time plotting
+        plt.ion()  # Interactive mode on
+        self.fig, self.ax = plt.subplots()
+        self.ax.set_title("Semantic Graph State")
+        self.ax.set_xlabel("X [m]")
+        self.ax.set_ylabel("Y [m]")
+        self.ax.grid(True)
+
+        # Create a timer to update the plot at 2Hz (every 0.5s)
+        # This prevents blocking your main sensor callbacks
+        self.viz_timer = self.create_timer(0.5, self.update_plot)
 
     # CALLBACK TO KEEP ROBOT POSITION UPDATED
     def pose_callback(self, msg: Odometry):
@@ -199,13 +215,28 @@ class BatchSemanticGraph(Node):
         self.get_logger().info(f"Created NEW {label} (ID: {self.node_id_counter})")
         self.node_id_counter += 1
 
-    def update_node(self, node_id, pose):
-        # Update logic (e.g., moving average of position, refresh timestamp)
+    def update_node(self, node_id, current_robot_pose):
+        # 1. Get the old position data
+        old_x, old_y, _ = self.graph.nodes[node_id]['pos']
+        
+        # 2. Get the new observation (Current Robot Position)
+        new_x, new_y, _ = current_robot_pose
+
+        # 3. Moving Average Logic
+        # alpha controls how fast the node moves towards the new position.
+        # 0.1 = very stable, 1.0 = jumps instantly to new position.
+        alpha = 0.3 
+
+        updated_x = (old_x * (1 - alpha)) + (new_x * alpha)
+        updated_y = (old_y * (1 - alpha)) + (new_y * alpha)
+
+        # 4. Save back to Graph
+        # We keep the original yaw or update it, usually yaw is less critical for point objects
+        self.graph.nodes[node_id]['pos'] = (updated_x, updated_y, current_robot_pose[2])
         self.graph.nodes[node_id]['last_seen'] = self.get_clock().now()
-        # We generally DON'T update the position heavily here because 
-        # 'pose' is where the robot is NOW, not where the object is.
-        # But we could pull the node slightly closer to the current robot pose.
-        self.get_logger().info(f"Updated {node_id}")
+        
+        # Log strictly for debugging (optional)
+        self.get_logger().info(f"Refined Pos for ID {node_id}: ({updated_x:.2f}, {updated_y:.2f})")
 
     #def publish_markers(self):
     #    # ADD FOR RVIZ
@@ -300,12 +331,86 @@ class BatchSemanticGraph(Node):
 
         response.top_k_results = results_list
         return response
+    
 
+
+    def update_plot(self):
+        # Skip if no data
+        if not hasattr(self, 'pose_msg') or self.pose_msg is None:
+            return
+
+        self.ax.clear()
+        self.ax.grid(True, linestyle='--', alpha=0.5)
+        self.ax.set_title(f"Semantic Graph: {self.graph.number_of_nodes()} Nodes")
+        
+        # --- SWAPPED AXIS LABELS ---
+        self.ax.set_xlabel("Y [m] (Left/Right)")
+        self.ax.set_ylabel("X [m] (Forward/Back)")
+
+        # 1. Extract Robot Position
+        rx = self.pose_msg.pose.pose.position.x
+        ry = self.pose_msg.pose.pose.position.y
+        
+        # 2. Center View (X is vertical, Y is horizontal)
+        self.ax.set_xlim(ry - 5, ry + 5)
+        self.ax.set_ylim(rx - 5, rx + 5)
+        self.ax.invert_xaxis()  # <--- KEEPS LEFT/RIGHT CORRECT
+
+        # 3. Draw Robot (Red Triangle pointing up)
+        # We plot (y, x) because of the swap
+        self.ax.plot(ry, rx, marker='^', color='red', markersize=15, label='Robot', zorder=10)
+
+        # 4. Draw Graph Nodes
+        if self.graph.number_of_nodes() > 0:
+            xs = [] # Vertical pos
+            ys = [] # Horizontal pos
+            labels = []
+            
+            # Extract data including ID
+            for node_id, data in self.graph.nodes(data=True):
+                xs.append(data['pos'][0])
+                ys.append(data['pos'][1])
+                # Format: "label (id)"
+                labels.append(f"{data.get('label', '?')} ({node_id})")
+            
+            # Plot Nodes (Blue Circles)
+            # alpha=0.5 helps see overlapping nodes
+            self.ax.scatter(ys, xs, c='blue', s=100, alpha=0.5, edgecolors='k', zorder=5)
+
+            # Annotate with Background Box for Readability
+            for i, txt in enumerate(labels):
+                self.ax.annotate(
+                    txt, 
+                    (ys[i], xs[i]), 
+                    xytext=(0, 5),                  # Shift text slightly up
+                    textcoords='offset points', 
+                    ha='center', 
+                    fontsize=9, 
+                    fontweight='bold',
+                    bbox=dict(boxstyle="round,pad=0.2", fc="white", alpha=0.7, ec="none") # White background
+                )
+
+        self.ax.legend(loc='upper right')
+        plt.draw()
+        plt.pause(0.001)
+
+
+#def main():
+#    rclpy.init()
+#    node = BatchSemanticGraph()
+#    rclpy.spin(node)
+#    node.destroy_node()
+#    rclpy.shutdown()
 
 def main():
     rclpy.init()
     node = BatchSemanticGraph()
-    rclpy.spin(node)
-    node.destroy_node()
-    rclpy.shutdown()
-
+    
+    try:
+        rclpy.spin(node)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        plt.close('all')  # Close the plot window
+        node.destroy_node()
+        rclpy.shutdown()
