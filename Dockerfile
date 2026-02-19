@@ -8,6 +8,9 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV HEADLESS=false
 ARG DEVELOPMENT=false
 
+# --- ROS2 NAV2 config (requires the cyclonedds to be installed) ---
+ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+
 # ------------------------------------------------------------
 # Add Gazebo Harmonic (OSRF) apt repository and deadsnakes PPA for Python 3.10
 # ------------------------------------------------------------

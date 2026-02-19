@@ -30,11 +30,11 @@ class BatchSemanticGraph(Node):
 
         self.declare_parameter("pose_topic", "/odometry")
         self.declare_parameter("label_topic", "/labels")
-        self.declare_parameter("top_k_return", 5)  # Objects returned from sevice calls
+        self.declare_parameter("top_k_return", 10)  # Objects returned from sevice calls
         
         # Hyperparameters
         self.SPATIAL_THRESH = 4.0  # Meters
-        self.ANGLE_THRESH = np.radians(60) # +/- 60 degrees field of view
+        self.ANGLE_THRESH = np.radians(359.999) # +/- 60 degrees field of view
         self.SEMANTIC_THRESH = 0.75
 
         # Embedder & Graph
@@ -225,7 +225,7 @@ class BatchSemanticGraph(Node):
         # 3. Moving Average Logic
         # alpha controls how fast the node moves towards the new position.
         # 0.1 = very stable, 1.0 = jumps instantly to new position.
-        alpha = 0.3 
+        alpha = 1.0 
 
         updated_x = (old_x * (1 - alpha)) + (new_x * alpha)
         updated_y = (old_y * (1 - alpha)) + (new_y * alpha)

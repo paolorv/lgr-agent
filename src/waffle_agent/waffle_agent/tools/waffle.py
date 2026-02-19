@@ -17,6 +17,13 @@ import ast
 # Import the services so we can create the clients
 from waffle_agent_msgs.srv import SearchByLabel, SearchByPosition
 
+# NAV2 NECESSARY
+import math
+from rclpy.action import ActionClient
+from nav2_msgs.action import NavigateToPose
+from geometry_msgs.msg import PoseStamped
+
+
 # Global references to be set by the main agent
 NODE: Node = None
 CMD_VEL_PUB = None
@@ -27,7 +34,7 @@ def init_waffle_tools(node: Node):
     global NODE, CMD_VEL_PUB
     NODE = node
     CMD_VEL_PUB = NODE.create_publisher(Twist, "/cmd_vel", 10)
-    NODE.create_subscription(Odometry, "/odom", _odom_callback, 10)
+    NODE.create_subscription(Odometry, "/odometry", _odom_callback, 10)
     NODE.get_logger().info("Waffle Tools initialized.")
 
 def _odom_callback(msg):
@@ -186,3 +193,61 @@ def query_graph_memory_positional(query: str):
         return json.dumps(output)
     else:
         return f"Error: {future.exception()}"
+    
+@tool
+def navigate_to_position(x: float, y: float, theta: float = 0.0) -> str:
+    """
+    Sends a Nav2 goal to navigate the robot to a specific x, y coordinate and yaw (theta) angle.
+    Wait for the navigation to finish before returning.
+    """
+    global NODE
+    if NODE is None:
+        return "Error: ROS Node not initialized."
+
+    # 1. Create the Action Client
+    nav_to_pose_client = ActionClient(NODE, NavigateToPose, 'navigate_to_pose')
+
+    NODE.get_logger().info("Waiting for Nav2 action server...")
+    if not nav_to_pose_client.wait_for_server(timeout_sec=5.0):
+        return "Error: Nav2 NavigateToPose action server not available."
+
+    # 2. Construct the Goal message
+    goal_msg = NavigateToPose.Goal()
+    goal_msg.pose.header.frame_id = 'map'
+    goal_msg.pose.header.stamp = NODE.get_clock().now().to_msg()
+
+    goal_msg.pose.pose.position.x = float(x)
+    goal_msg.pose.pose.position.y = float(y)
+    goal_msg.pose.pose.position.z = 0.0
+
+    # Convert theta (yaw) to quaternion
+    goal_msg.pose.pose.orientation.x = 0.0
+    goal_msg.pose.pose.orientation.y = 0.0
+    goal_msg.pose.pose.orientation.z = math.sin(theta / 2.0)
+    goal_msg.pose.pose.orientation.w = math.cos(theta / 2.0)
+
+    NODE.get_logger().info(f"Sending Nav2 goal: x={x}, y={y}, theta={theta}")
+
+    # 3. Send the Goal
+    send_goal_future = nav_to_pose_client.send_goal_async(goal_msg)
+
+    # Wait for the server to accept or reject the goal
+    rclpy.spin_until_future_complete(NODE, send_goal_future)
+
+    goal_handle = send_goal_future.result()
+    if not goal_handle.accepted:
+        return "Nav2 Goal was rejected by the action server."
+
+    NODE.get_logger().info("Goal accepted, robot is moving. Waiting for result...")
+    
+    # 4. Wait for the robot to finish moving
+    get_result_future = goal_handle.get_result_async()
+    rclpy.spin_until_future_complete(NODE, get_result_future)
+
+    result = get_result_future.result()
+    
+    # Action statuses: 4 is SUCCEEDED, 5 is CANCELED, 6 is ABORTED
+    if result.status == 4:
+        return f"Navigation successful. Robot reached x={x}, y={y}, theta={theta}."
+    else:
+        return f"Navigation failed or was aborted. Action status code: {result.status}"

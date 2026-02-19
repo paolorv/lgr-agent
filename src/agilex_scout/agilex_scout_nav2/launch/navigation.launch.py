@@ -43,16 +43,13 @@ def launch_setup(context):
 
     # parameters for Nav2
     slam = "True" if mode == "slam" else "False"
-    use_sim_time_str = "True" if sim == "true" else "False"
-    
-    # Boolean equivalent for individual Node parameters
-    use_sim_time_bool = True if sim == "true" else False
+    use_sim_time = "True" if sim == "true" else "False"
 
     # Nav2 bringup
     nav2_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(nav2_launch_file),
         launch_arguments={
-            "use_sim_time": use_sim_time_str,
+            "use_sim_time": use_sim_time,
             "params_file": nav2_params_file,
             "slam": slam,
         }.items(),
@@ -72,7 +69,6 @@ def launch_setup(context):
             "--frame-id",       "world",
             "--child-frame-id", "map",
         ],
-        parameters=[{"use_sim_time": use_sim_time_bool}],
     )
 
     # RViz2
@@ -83,7 +79,6 @@ def launch_setup(context):
         name="rviz2",
         output="screen",
         arguments=["-d", rviz_default_config_file],
-        parameters=[{"use_sim_time": use_sim_time_bool}],
     )
 
     return [
