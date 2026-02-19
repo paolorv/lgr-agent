@@ -45,6 +45,7 @@ def generate_launch_description():
 			{
 				"config_file": ros2_gz_bridge_file,
 				"qos_overrides./tf_static.publisher.durability": "transient_local",
+				"use_sim_time": True,
 			}
 		],
 		output="screen",
@@ -119,7 +120,7 @@ def generate_launch_description():
 	)
 
 	# world->map static transform
-	world_map_tf = Node(
+	static_tf = Node(
 		package="tf2_ros",
 		executable="static_transform_publisher",
 		arguments=[
@@ -131,23 +132,6 @@ def generate_launch_description():
 			"--roll", "0.0",
 			"--frame-id", "world",
 			"--child-frame-id", "map",
-		],
-		parameters=[{"use_sim_time": True}]
-	)
-
-	# map->odom static transform (required for Nav2)
-	map_odom_tf = Node(
-		package="tf2_ros",
-		executable="static_transform_publisher",
-		arguments=[
-			"--x", "0.0",
-			"--y", "0.0",
-			"--z", "0.0",
-			"--yaw", "0.0",
-			"--pitch", "0.0",
-			"--roll", "0.0",
-			"--frame-id", "map",
-			"--child-frame-id", "odom",
 		],
 		parameters=[{"use_sim_time": True}]
 	)
@@ -169,6 +153,7 @@ def generate_launch_description():
 		remappings=[('cloud_in', "/points"),
 					('scan', "/laser_scan")],
 		parameters=[{
+			'use_sim_time': True,
 			'transform_tolerance': 0.05,
 			'min_height': 0.0,
 			'max_height': 1.0,
@@ -182,34 +167,16 @@ def generate_launch_description():
 		}],
 	)
 
-	# SLAM Toolbox for mapping ###ADDED
-	slam_node = Node(
-		package='slam_toolbox',
-		executable='async_slam_toolbox_node',
-		name='slam_toolbox',
-		output='screen',
-		parameters=[{
-			'use_sim_time': True,
-			'slam_mode': True,
-			'map_file_name': '/tmp/scout_map',
-		}],
-		remappings=[
-			('/scan', '/laser_scan'),
-		],
-	)
-
 	return LaunchDescription(
 		[
-			world_map_tf,
-			map_odom_tf,
+			static_tf,
 			robot_state_publisher_node,
 			*set_env_vars_gz,
 			gz_sim,
 			spawn_robot_urdf_node,
 			ros2_gz_bridge_node,
-			pointcloud_to_laserscan_node,
-			slam_node,   ###ADDED
 			rviz_node,
 			teleop_keyboard_node,
+			pointcloud_to_laserscan_node
 		]
 	)

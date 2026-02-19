@@ -1,0 +1,10 @@
+<root main_tree_to_execute="MainTree">
+	<BehaviorTree ID="MainTree">
+		<RateController hz="2.0">
+			<Sequence name="NavigateToPose">
+				<ComputePathToPose goal="{goal}" path="{path}" planner_id="CustomPlugins" />
+				<FollowPath path="{path}" controller_id="FollowPath" />
+			</Sequence>
+		</RateController>
+	</BehaviorTree>
+</root>
