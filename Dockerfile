@@ -130,12 +130,16 @@ RUN /usr/bin/python3 -m pip install python-dotenv pyinputplus jpl-rosa rich lang
 # ============================================================
 WORKDIR /app/remembr
 
+# Upgrade pip and setuptools to fix the resolver AssertionError bug
+RUN /usr/bin/python3 -m pip install --upgrade pip setuptools
+
 # Install remembr in the core python env used by ROS2
 RUN /usr/bin/python3 -m pip install -e .
 
 # REMEMBR extra requirements
 WORKDIR /app/remembr
-RUN /usr/bin/python3 -m pip install -r requirements.txt --no-cache-dir && \
+# Install requirements, ignoring the system-installed sympy to avoid distutils uninstall errors
+RUN /usr/bin/python3 -m pip install -r requirements.txt --no-cache-dir --ignore-installed sympy && \
     /usr/bin/python3 -m pip install --no-cache-dir "transformers==4.46.0" "peft==0.11.1" "sentence-transformers==2.7.0"
 
 ### ADDITIONAL FIXES
