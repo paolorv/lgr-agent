@@ -23,11 +23,10 @@ def generate_launch_description():
         choices=["true", "false"],
     )
 
-    # Added required map argument for Humble compatibility
     map_arg = DeclareLaunchArgument(
         name="map",
         default_value="",
-        description="Full path to map yaml file to load (required for localization)",
+        description="Full path to map yaml file to load",
     )
 
     return LaunchDescription([
@@ -49,9 +48,12 @@ def launch_setup(context):
     sim = LaunchConfiguration("sim").perform(context).lower()
     map_path = LaunchConfiguration("map").perform(context)
 
-    # parameters for Nav2
+    # Strings required for the Nav2 bringup arguments
     slam = "True" if mode == "slam" else "False"
     use_sim_time = "True" if sim == "true" else "False"
+    
+    # Boolean required for the local node parameters to fix the RViz goal timestamp
+    is_sim = (sim == "true")
 
     # Nav2 bringup
     nav2_launch = IncludeLaunchDescription(
@@ -60,35 +62,9 @@ def launch_setup(context):
             "use_sim_time": use_sim_time,
             "params_file": nav2_params_file,
             "slam": slam,
-            "map": map_path, # Passed down to satisfy Humble's strict validation
+            "map": map_path,
         }.items(),
     )
-
-    # world->map static TF
-    #static_tf = Node(
-    #    package="tf2_ros",
-    #    executable="static_transform_publisher",
-    #    arguments=[
-    #        "--x",              "0.0",
-    #        "--y",              "0.0",
-    #        "--z",              "0.0",
-    #        "--yaw",            "0.0",
-    #        "--pitch",          "0.0",
-    #        "--roll",           "0.0",
-    #        "--frame-id",       "world",
-    #        "--child-frame-id", "map",
-    #    ],
-    #)
-
-    # RViz2
-    #rviz_default_config_file = os.path.join(get_package_share_directory("agilex_scout_nav2"), "rviz", "nav2.rviz")
-    #rviz_node = Node(
-    #    package="rviz2",
-    #    executable="rviz2",
-    #    name="rviz2",
-    #    output="screen",
-    #    arguments=["-d", rviz_default_config_file],
-    #)
 
     # world->map static TF
     static_tf = Node(
@@ -104,7 +80,7 @@ def launch_setup(context):
             "--frame-id",       "world",
             "--child-frame-id", "map",
         ],
-        parameters=[{"use_sim_time": use_sim_time == "True"}] # <-- ADD THIS
+        parameters=[{"use_sim_time": is_sim}]
     )
 
     # RViz2
@@ -115,7 +91,7 @@ def launch_setup(context):
         name="rviz2",
         output="screen",
         arguments=["-d", rviz_default_config_file],
-        parameters=[{"use_sim_time": use_sim_time == "True"}] # <-- ADD THIS
+        parameters=[{"use_sim_time": is_sim}]
     )
 
     return [
