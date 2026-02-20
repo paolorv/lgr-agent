@@ -35,7 +35,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     #ros-humble-turtlebot3-description \
     # Gazebo Harmonic + ROS 2 bridge
     gz-harmonic \
-    ros-humble-ros-gz \
+    ros-humble-ros-gzharmonic \
     # ros2_control packages
     ros-humble-ros2-control \
     ros-humble-ros2-controllers \
@@ -155,3 +155,32 @@ RUN echo '#!/bin/bash\nsource /opt/venv/csagent/bin/activate' > /app/use_csagent
 # Set working dir and default command: interactive shell with ROS2 + venv sourced
 WORKDIR /app
 CMD ["/bin/bash", "-c", "source /opt/ros/humble/setup.bash && source /opt/venv/csagent/bin/activate && echo 'ROSA+REMEMBR environment ready on ROS2 Humble with Python 3.10' && echo 'Run runwaffletester.sh to launch the Gazebo test environment, then run `start` to build and launch the rosa_waffle_bot controller.' && /bin/bash"]
+
+
+
+
+
+# ============================================================
+# to fix NUMPY INSTALLATION ISSUES
+# 1. Uninstall repeatedly to catch any multi-directory leftovers (run this twice!)
+#/usr/bin/python3 -m pip uninstall -y numpy scipy scikit-learn
+#/usr/bin/python3 -m pip uninstall -y numpy scipy scikit-learn
+
+# 2. Clear pip cache so it doesn't accidentally reuse the corrupted 2.0 wheels
+#/usr/bin/python3 -m pip cache purge
+
+# 3. Clean install the locked 1.x trio (bypassing cache just to be safe)
+#/usr/bin/python3 -m pip install "numpy==1.26.4" "scipy==1.13.1" "scikit-learn==1.4.2" --no-cache-dir
+
+
+# ============================================================
+# FIX TO ADD TO DOCKERFILE IF NUMPY INSTALLATION ISSUES OCCUR -> the same as above but in Dockerfile
+#WORKDIR /app/remembr
+
+# Upgrade pip and setuptools to fix the resolver AssertionError bug
+#RUN /usr/bin/python3 -m pip install --upgrade pip setuptools
+
+# Lock the ML environment to pre-NumPy-2.0 versions BEFORE running requirements.txt
+#RUN /usr/bin/python3 -m pip install "numpy==1.26.4" "scipy==1.13.1" "scikit-learn==1.4.2" --no-cache-dir && \
+#    /usr/bin/python3 -m pip install -r requirements.txt --no-cache-dir --ignore-installed sympy && \
+#    /usr/bin/python3 -m pip install --no-cache-dir "transformers==4.46.0" "peft==0.11.1" "sentence-transformers==2.7.0"
