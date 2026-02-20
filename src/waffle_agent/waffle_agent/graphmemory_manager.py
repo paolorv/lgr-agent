@@ -85,7 +85,7 @@ class BatchSemanticGraph(Node):
 
         # Create a timer to update the plot at 2Hz (every 0.5s)
         # This prevents blocking your main sensor callbacks
-        self.viz_timer = self.create_timer(0.5, self.update_plot)
+        self.viz_timer = self.create_timer(1.0, self.update_plot)
 
     # CALLBACK TO KEEP ROBOT POSITION UPDATED
     def pose_callback(self, msg: Odometry):
