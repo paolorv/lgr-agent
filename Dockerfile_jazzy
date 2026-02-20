@@ -1,8 +1,7 @@
 # ============================================================
 #  Base image: ROS2 Jazzy (Python 3.10) → ROSA environment
 # ============================================================
-#FROM osrf/ros:jazzy-desktop-noble AS rosa-ros2
-FROM osrf/ros:humble-desktop AS rosa-ros2
+FROM osrf/ros:jazzy-desktop-noble AS rosa-ros2
 LABEL authors="Paolo Riva"
 
 ENV DEBIAN_FRONTEND=noninteractive

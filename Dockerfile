@@ -1,5 +1,5 @@
 # ============================================================
-#  Base image: ROS 2 Humble → ROSA environment
+#  Base image: ROS2 Humble (Python 3.10) → ROSA environment
 # ============================================================
 FROM osrf/ros:humble-desktop AS rosa-ros2
 LABEL authors="Paolo Riva"
@@ -12,7 +12,7 @@ ARG DEVELOPMENT=false
 ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 
 # ------------------------------------------------------------
-# Add Gazebo Harmonic (OSRF) apt repository and deadsnakes PPA for Python 3.12
+# Add Gazebo Harmonic (OSRF) apt repository
 # ------------------------------------------------------------
 RUN apt-get update && apt-get install -y curl lsb-release gnupg software-properties-common && \
     curl -sSL https://packages.osrfoundation.org/gazebo.gpg \
@@ -20,16 +20,15 @@ RUN apt-get update && apt-get install -y curl lsb-release gnupg software-propert
     echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] \
         https://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" \
         > /etc/apt/sources.list.d/gazebo-stable.list && \
-    add-apt-repository -y ppa:deadsnakes/ppa && \
     rm -rf /var/lib/apt/lists/*
 
 # ------------------------------------------------------------
-# System packages + Python 3.12 + ROS2 packages commonly needed
+# System packages + Python 3.10 + ROS2 packages commonly needed
 # ------------------------------------------------------------
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    # Python 3.12 (Humble system Python is 3.10, so we install 3.12 alongside)
-    python3.12 python3.12-venv python3.12-dev \
-    # ROS 2 packages that exist in Humble
+    # Python 3.10 (Native for Ubuntu 22.04 / Humble)
+    python3.10 python3.10-venv python3.10-dev \
+    # ROS2 packages that exist in Humble
     #ros-humble-turtlesim \
     #ros-humble-turtlebot3-gazebo \
     #ros-humble-turtlebot3-teleop \
@@ -43,7 +42,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     # essentials and GUI libraries
     locales mesa-utils mesa-utils-extra \
     libgl1-mesa-dri libglu1-mesa \
-    # Additional GPU/Graphics support (Ubuntu 22.04 Jammy)
+    # Additional GPU/Graphics support (Ubuntu 22.04 Jammy equivalents)
     libglvnd0 libglx0 libglvnd-dev libopengl0 \
     libegl1 libgles2 libegl-mesa0 \
     libvulkan1 vulkan-tools \
@@ -52,7 +51,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     x11-apps xvfb \
     # Development tools
     cargo rustc tmux git nano docker.io \
-    python3-pip python3-empy python3-defusedxml python3-colcon-common-extensions python3-flask python3-rosdep \
+    python3-pip python3-empy python3-defusedxml python3-colcon-common-extensions python3-flask \
     build-essential wget curl \
  && rm -rf /var/lib/apt/lists/*
 
@@ -64,22 +63,24 @@ ENV NVIDIA_DRIVER_CAPABILITIES=all
 ENV __GLX_VENDOR_LIBRARY_NAME=nvidia
 
 # ============================================================
-# CUDA TOOLKIT INSTALL (Commented out as per original)
+# CUDA TOOLKIT INSTALL (Commented out as in original)
 # ============================================================
 # Define versions for easy updates
 #ARG CUDA_MAJOR_VERSION=13
 #ARG CUDA_MINOR_VERSION=0
+# The apt package usually follows the format cuda-toolkit-X-Y
 #ARG CUDA_PKG_VERSION=${CUDA_MAJOR_VERSION}-${CUDA_MINOR_VERSION}
 
-#RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/cuda-keyring_1.1-1_all.deb && \
+#RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.1-1_all.deb && \
 #    sudo dpkg -i cuda-keyring_1.1-1_all.deb && \
 #    sudo apt-get update && \
 #    sudo apt-get -y install cuda-toolkit-${CUDA_PKG_VERSION}
+### Check sintax
 
 # ============================================================
-# Create single Python 3.12 venv used by ROSA + REMEMBR
+# Create single Python 3.10 venv used by ROSA + REMEMBR
 # ============================================================
-RUN python3.12 -m venv /opt/venv/csagent && \
+RUN python3.10 -m venv /opt/venv/csagent && \
     /opt/venv/csagent/bin/python -m ensurepip && \
     /opt/venv/csagent/bin/pip install -U pip setuptools wheel
 
@@ -111,7 +112,7 @@ COPY . /app/
 WORKDIR /app/
 
 # ============================================================
-# Install ROSA and common Python deps into the Python 3.12 VENV
+# Install ROSA and common Python deps (use venv pip)
 # ============================================================
 # Install ROSA: editable in dev, otherwise install from pip if available
 RUN /bin/bash -lc '\
@@ -121,27 +122,25 @@ RUN /bin/bash -lc '\
         /opt/venv/csagent/bin/pip install -U jpl-rosa>=1.0.7 || true ; \
     fi'
 
-# Install Waffle-agent dependencies cleanly into the venv
-RUN /opt/venv/csagent/bin/pip install python-dotenv pyinputplus jpl-rosa rich langchain langchain-ollama requests
+# Install Waffle-agent dependencies globally to system Python 3.10
+RUN /usr/bin/python3 -m pip install python-dotenv pyinputplus jpl-rosa rich langchain langchain-ollama requests
 
 # ============================================================
-# REMEMBR + VILA installation (inside the Python 3.12 VENV)
+# NEW REMEMBR + VILA installation (inside global python env)
 # ============================================================
 WORKDIR /app/remembr
 
-# Install remembr base
-RUN /opt/venv/csagent/bin/pip install -e .
-
-# Upgrade pip explicitly in the venv to ensure complex dependency trees don't fail
-RUN /opt/venv/csagent/bin/pip install --upgrade pip setuptools wheel
+# Install remembr in the core python env used by ROS2
+RUN /usr/bin/python3 -m pip install -e .
 
 # REMEMBR extra requirements
-RUN /opt/venv/csagent/bin/pip install -r requirements.txt --no-cache-dir && \
-    /opt/venv/csagent/bin/pip install --no-cache-dir "transformers==4.46.0" "peft==0.11.1" "sentence-transformers==2.7.0"
+WORKDIR /app/remembr
+RUN /usr/bin/python3 -m pip install -r requirements.txt --no-cache-dir && \
+    /usr/bin/python3 -m pip install --no-cache-dir "transformers==4.46.0" "peft==0.11.1" "sentence-transformers==2.7.0"
 
 ### ADDITIONAL FIXES
-RUN /opt/venv/csagent/bin/pip install "setuptools==79.0.0"
-RUN /opt/venv/csagent/bin/pip install -U langchain-core langchain-ollama langchain python-dotenv pyinputplus jpl-rosa rich requests
+RUN /usr/bin/python3 -m pip install "setuptools==79.0.0"
+RUN /usr/bin/python3 -m pip install -U langchain-core langchain-ollama langchain python-dotenv pyinputplus jpl-rosa rich requests
 
 # ============================================================
 # Helper script to activate the venv in a running container
@@ -151,28 +150,4 @@ RUN echo '#!/bin/bash\nsource /opt/venv/csagent/bin/activate' > /app/use_csagent
 
 # Set working dir and default command: interactive shell with ROS2 + venv sourced
 WORKDIR /app
-CMD ["/bin/bash", "-c", "source /opt/ros/humble/setup.bash && source /opt/venv/csagent/bin/activate && echo 'ROSA+REMEMBR environment ready on ROS2 Humble with Python 3.10/3.12' && echo 'Run runwaffletester.sh to launch the Gazebo test environment, then run `start` to build and launch the rosa_waffle_bot controller.' && /bin/bash"]
-
-# ============================================================
-# OLD REMEMBR + VILA installation (inside same venv - commented out)
-# ============================================================
-#WORKDIR /app/remembr
-#
-# Install REMEMBR base (editable)
-#RUN /opt/venv/csagent/bin/pip install -e .
-#
-# Create deps and install VILA + flash-attn wheel
-#RUN mkdir -p deps && cd deps && \
-#    git clone https://github.com/NVlabs/VILA.git && \
-#    cd VILA && \
-#    /opt/venv/csagent/bin/pip install --no-cache-dir https://github.com/Dao-AILab/flash-attention/releases/download/v2.5.8/flash_attn-2.5.8+cu122torch2.3cxx11abiFALSE-cp310-cp310-linux_x86_64.whl || true && \
-#    /opt/venv/csagent/bin/pip install -e . && \
-#    /opt/venv/csagent/bin/pip install -e ".[train]" && \
-#    /opt/venv/csagent/bin/pip install -e ".[eval]" && \
-#    /opt/venv/csagent/bin/pip install -U "transformers==4.46.0"
-#
-# REMEMBR extra requirements
-#WORKDIR /app/remembr
-#RUN /opt/venv/csagent/bin/pip install -r requirements.txt --no-cache-dir && \
-#    /opt/venv/csagent/bin/pip install --no-cache-dir "transformers==4.43.3" "peft==0.11.1" "sentence-transformers==2.7.0" && \
-#    /opt/venv/csagent/bin/pip install --no-cache-dir flask
+CMD ["/bin/bash", "-c", "source /opt/ros/humble/setup.bash && source /opt/venv/csagent/bin/activate && echo 'ROSA+REMEMBR environment ready on ROS2 Humble with Python 3.10' && echo 'Run runwaffletester.sh to launch the Gazebo test environment, then run `start` to build and launch the rosa_waffle_bot controller.' && /bin/bash"]
