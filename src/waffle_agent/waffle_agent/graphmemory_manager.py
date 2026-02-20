@@ -225,7 +225,7 @@ class BatchSemanticGraph(Node):
         # 3. Moving Average Logic
         # alpha controls how fast the node moves towards the new position.
         # 0.1 = very stable, 1.0 = jumps instantly to new position.
-        alpha = 1.0 
+        alpha = 0.5 
 
         updated_x = (old_x * (1 - alpha)) + (new_x * alpha)
         updated_y = (old_y * (1 - alpha)) + (new_y * alpha)

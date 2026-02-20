@@ -137,6 +137,7 @@ docker run -it --rm \
   --group-add video \
   --network host \
   --privileged \
+  --shm-size=512m \
   $CONTAINER_NAME
 
 # Disable X11 forwarding
