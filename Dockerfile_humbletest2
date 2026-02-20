@@ -29,7 +29,7 @@ RUN apt-get update && apt-get install -y curl lsb-release gnupg software-propert
 RUN apt-get update && apt-get install -y --no-install-recommends \
     # Python 3.12 (Humble system Python is 3.10, so we install 3.12 alongside)
     python3.12 python3.12-venv python3.12-dev \
-    # ROS 2 packages that exist in Humble
+    # ROS2 packages that exist in Humble
     #ros-humble-turtlesim \
     #ros-humble-turtlebot3-gazebo \
     #ros-humble-turtlebot3-teleop \
@@ -86,6 +86,9 @@ RUN python3.12 -m venv /opt/venv/csagent && \
 ENV PATH="/root/.cargo/bin:${PATH}"
 ENV CSAGENT_ENV=/opt/venv/csagent
 
+# [REMOVED IN HUMBLE] Ensure python3 points to python3.12 
+# We MUST leave the system Python pointing to 3.10 for Ubuntu 22.04 / ROS 2 Humble to function.
+
 # ------------------------------------------------------------
 # Useful environment variables for TurtleBot3 and workspace
 # ------------------------------------------------------------
@@ -111,7 +114,7 @@ COPY . /app/
 WORKDIR /app/
 
 # ============================================================
-# Install ROSA and common Python deps into the Python 3.12 VENV
+# Install ROSA and common Python deps 
 # ============================================================
 # Install ROSA: editable in dev, otherwise install from pip if available
 RUN /bin/bash -lc '\
@@ -121,27 +124,27 @@ RUN /bin/bash -lc '\
         /opt/venv/csagent/bin/pip install -U jpl-rosa>=1.0.7 || true ; \
     fi'
 
-# Install Waffle-agent dependencies cleanly into the venv
-RUN /opt/venv/csagent/bin/pip install python-dotenv pyinputplus jpl-rosa rich langchain langchain-ollama requests
+# Install Waffle-agent dependencies into the core Python env
+RUN /usr/bin/python3 -m pip install python-dotenv pyinputplus jpl-rosa rich langchain langchain-ollama requests
 
 # ============================================================
-# REMEMBR + VILA installation (inside the Python 3.12 VENV)
+# REMEMBR + VILA installation (inside global python env)
 # ============================================================
 WORKDIR /app/remembr
 
-# Install remembr base
-RUN /opt/venv/csagent/bin/pip install -e .
+RUN /usr/bin/python3 -m pip install -e .
 
-# Upgrade pip explicitly in the venv to ensure complex dependency trees don't fail
-RUN /opt/venv/csagent/bin/pip install --upgrade pip setuptools wheel
+# Upgrade pip to fix the Ubuntu 22.04 resolvelib AssertionError bug
+RUN /usr/bin/python3 -m pip install --upgrade pip setuptools wheel
 
 # REMEMBR extra requirements
-RUN /opt/venv/csagent/bin/pip install -r requirements.txt --no-cache-dir && \
-    /opt/venv/csagent/bin/pip install --no-cache-dir "transformers==4.46.0" "peft==0.11.1" "sentence-transformers==2.7.0"
+WORKDIR /app/remembr
+RUN /usr/bin/python3 -m pip install -r requirements.txt --no-cache-dir && \
+    /usr/bin/python3 -m pip install --no-cache-dir "transformers==4.46.0" "peft==0.11.1" "sentence-transformers==2.7.0"
 
 ### ADDITIONAL FIXES
-RUN /opt/venv/csagent/bin/pip install "setuptools==79.0.0"
-RUN /opt/venv/csagent/bin/pip install -U langchain-core langchain-ollama langchain python-dotenv pyinputplus jpl-rosa rich requests
+RUN /usr/bin/python3 -m pip install "setuptools==79.0.0"
+RUN /usr/bin/python3 -m pip install -U langchain-core langchain-ollama langchain python-dotenv pyinputplus jpl-rosa rich requests
 
 # ============================================================
 # Helper script to activate the venv in a running container
@@ -152,27 +155,3 @@ RUN echo '#!/bin/bash\nsource /opt/venv/csagent/bin/activate' > /app/use_csagent
 # Set working dir and default command: interactive shell with ROS2 + venv sourced
 WORKDIR /app
 CMD ["/bin/bash", "-c", "source /opt/ros/humble/setup.bash && source /opt/venv/csagent/bin/activate && echo 'ROSA+REMEMBR environment ready on ROS2 Humble with Python 3.10/3.12' && echo 'Run runwaffletester.sh to launch the Gazebo test environment, then run `start` to build and launch the rosa_waffle_bot controller.' && /bin/bash"]
-
-# ============================================================
-# OLD REMEMBR + VILA installation (inside same venv - commented out)
-# ============================================================
-#WORKDIR /app/remembr
-#
-# Install REMEMBR base (editable)
-#RUN /opt/venv/csagent/bin/pip install -e .
-#
-# Create deps and install VILA + flash-attn wheel
-#RUN mkdir -p deps && cd deps && \
-#    git clone https://github.com/NVlabs/VILA.git && \
-#    cd VILA && \
-#    /opt/venv/csagent/bin/pip install --no-cache-dir https://github.com/Dao-AILab/flash-attention/releases/download/v2.5.8/flash_attn-2.5.8+cu122torch2.3cxx11abiFALSE-cp310-cp310-linux_x86_64.whl || true && \
-#    /opt/venv/csagent/bin/pip install -e . && \
-#    /opt/venv/csagent/bin/pip install -e ".[train]" && \
-#    /opt/venv/csagent/bin/pip install -e ".[eval]" && \
-#    /opt/venv/csagent/bin/pip install -U "transformers==4.46.0"
-#
-# REMEMBR extra requirements
-#WORKDIR /app/remembr
-#RUN /opt/venv/csagent/bin/pip install -r requirements.txt --no-cache-dir && \
-#    /opt/venv/csagent/bin/pip install --no-cache-dir "transformers==4.43.3" "peft==0.11.1" "sentence-transformers==2.7.0" && \
-#    /opt/venv/csagent/bin/pip install --no-cache-dir flask
