@@ -89,7 +89,7 @@ class BatchSemanticGraph(Node):
 
     # CALLBACK TO KEEP ROBOT POSITION UPDATED
     def pose_callback(self, msg: Odometry):
-        self.get_logger().info("Received pose...")
+        #self.get_logger().info("Received pose...")
         self.pose_msg = msg
         #self.logger.info("Received pose message (MARKPOSE)")
 

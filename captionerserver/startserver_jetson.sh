@@ -1,6 +1,6 @@
 #!/bin/bash
 
-docker build --no-cache -t florence-server .
+docker build -t florence-server .
 
 # Replaced --gpus all with --runtime nvidia
 docker run -d \

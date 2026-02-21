@@ -33,7 +33,7 @@ class ObjectDetectionClient(Node):
         )
         
         # PROCESS MEMORY ITEM EVERY N SECONDS --> Callback posts to the memory server
-        self.process_timer = self.create_timer(7.0, self.timer_callback)
+        self.process_timer = self.create_timer(5.0, self.timer_callback)
 
         self.api_url = "http://localhost:8001/labels"
         self.get_logger().info("OD Client Started. Sending multipart/form-data requests...")
@@ -41,7 +41,7 @@ class ObjectDetectionClient(Node):
 
     def img_callback(self, msg):
         """Keep latest available frame."""
-        self.get_logger().info("Received Image payload")
+        #self.get_logger().info("Received Image payload")
         try:
             self.latest_cv_img = self.bridge.imgmsg_to_cv2(msg, "bgr8")
         except Exception as e:

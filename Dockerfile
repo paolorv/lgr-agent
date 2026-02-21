@@ -35,6 +35,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     #ros-humble-turtlebot3-description \
     # Gazebo Harmonic + ROS 2 bridge
     gz-harmonic \
+    ros-humble-rviz2 \
     #ros-humble-ros-gzharmonic \
     # ros2_control packages
     ros-humble-ros2-control \
@@ -61,6 +62,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 ENV NVIDIA_VISIBLE_DEVICES=all
 ENV NVIDIA_DRIVER_CAPABILITIES=all
 ENV __GLX_VENDOR_LIBRARY_NAME=nvidia
+ENV ROS2_DISTRO=humble
+ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+ENV ROS_DOMAIN_ID=63
 
 # ============================================================
 # CUDA TOOLKIT INSTALL (Commented out as in original)
@@ -124,6 +128,35 @@ RUN /bin/bash -lc '\
 
 # Install Waffle-agent dependencies globally to system Python 3.10
 RUN /usr/bin/python3 -m pip install python-dotenv pyinputplus jpl-rosa rich langchain langchain-ollama requests
+
+
+################# DEPENDENCIES FOR NODES #######################
+RUN /usr/bin/python3 -m pip uninstall -y numpy scipy scikit-learn
+RUN /usr/bin/python3 -m pip uninstall -y numpy scipy scikit-learn
+
+# 2. Clear pip cache so it doesn't accidentally reuse the corrupted 2.0 wheels
+RUN /usr/bin/python3 -m pip cache purge
+
+# 3. Clean install the locked 1.x trio (bypassing cache just to be safe)
+RUN /usr/bin/python3 -m pip install "numpy==1.26.4" "scipy==1.13.1" "scikit-learn==1.4.2" --no-cache-dir
+
+# Update and install required packages for humble
+RUN apt update && apt install -y \
+    ros-${ROS2_DISTRO}-navigation2 \
+    ros-${ROS2_DISTRO}-nav2-bringup \
+    ros-${ROS2_DISTRO}-tf2-geometry-msgs \
+    ros-${ROS2_DISTRO}-joint-state-publisher \
+    ros-${ROS2_DISTRO}-pointcloud-to-laserscan \
+    ros-${ROS2_DISTRO}-tf-transformations \
+    ros-${ROS2_DISTRO}-joint-state-publisher-gui \
+    ros-${ROS2_DISTRO}-joint-state-broadcaster \
+    ros-${ROS2_DISTRO}-rmw-cyclonedds-cpp \
+    xterm
+
+RUN /opt/venv/csagent/bin/pip install empy==3.3.4 lark
+RUN /opt/venv/csagent/bin/pip install catkin_pkg lark
+
+
 
 # ============================================================
 # NEW REMEMBR + VILA installation (inside global python env)
