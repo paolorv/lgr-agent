@@ -1,7 +1,7 @@
 # ============================================================
 #  Base image: ROS2 Humble (Python 3.10) → ROSA environment
 # ============================================================
-FROM osrf/ros:humble-desktop AS rosa-ros2
+FROM arm64v8/ros:humble AS rosa-ros2
 LABEL authors="Paolo Riva"
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -35,7 +35,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     #ros-humble-turtlebot3-description \
     # Gazebo Harmonic + ROS 2 bridge
     gz-harmonic \
-    ros-humble-ros-gzharmonic \
+    #ros-humble-ros-gzharmonic \
     # ros2_control packages
     ros-humble-ros2-control \
     ros-humble-ros2-controllers \

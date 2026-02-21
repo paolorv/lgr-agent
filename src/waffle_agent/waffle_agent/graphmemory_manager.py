@@ -28,7 +28,7 @@ class BatchSemanticGraph(Node):
     def __init__(self):
         super().__init__('batch_semantic_graph')
 
-        self.declare_parameter("pose_topic", "/odometry")
+        self.declare_parameter("pose_topic", "/odom")
         self.declare_parameter("label_topic", "/labels")
         self.declare_parameter("top_k_return", 10)  # Objects returned from sevice calls
         
@@ -89,6 +89,7 @@ class BatchSemanticGraph(Node):
 
     # CALLBACK TO KEEP ROBOT POSITION UPDATED
     def pose_callback(self, msg: Odometry):
+        self.get_logger().info("Received pose...")
         self.pose_msg = msg
         #self.logger.info("Received pose message (MARKPOSE)")
 

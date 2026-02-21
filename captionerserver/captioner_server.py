@@ -16,20 +16,53 @@ print(f"Initializing Florence-2 Service on {device}...")
 
 # LOAD MODEL (Global variable, loaded once at startup)
 # We use 'eager' attention to prevent the 4.46+ transformers crash
+#model = AutoModelForCausalLM.from_pretrained(
+#    model_id, 
+#    torch_dtype=torch_dtype, 
+#    trust_remote_code=True,
+#    attn_implementation="eager"
+#).to(device)
+
+#processor = AutoProcessor.from_pretrained(
+#    model_id, 
+#    trust_remote_code=True
+#)
+
+# LOAD MODEL ON JETSON BUGGY
+# Removed .to(device) at the end, and added device_map="cuda"
+#model = AutoModelForCausalLM.from_pretrained(
+#    model_id, 
+#    torch_dtype=torch_dtype, 
+#    trust_remote_code=True,
+#    attn_implementation="eager",
+#    device_map="cuda"  # <--
+#)
+
+#processor = AutoProcessor.from_pretrained(
+#    model_id, 
+#    trust_remote_code=True
+#)
+
+# LOAD MODEL ON JETSON
+print("Loading model weights...")
+
+# 1. Remove torch_dtype and device_map from from_pretrained
+# 2. Add .to(device, torch_dtype) to the very end
 model = AutoModelForCausalLM.from_pretrained(
     model_id, 
-    torch_dtype=torch_dtype, 
     trust_remote_code=True,
     attn_implementation="eager"
-).to(device)
+).to(device, torch_dtype)
 
 processor = AutoProcessor.from_pretrained(
     model_id, 
     trust_remote_code=True
 )
 
+
 print("Florence-2 Service Ready!")
 
+@torch.inference_mode()
 def run_inference(image, task_prompt):
     """Process frame with selected task from input_ids"""
     # Ensure RGB
@@ -120,7 +153,15 @@ def labels():
 
 @app.route("/health", methods=["GET"])
 def health():
-    return jsonify({"status": "ok", "gpu": torch.cuda.get_device_name(0)}), 200
+    # <-- UPDATE THIS: Fails gracefully if CUDA isn't attached properly
+    if torch.cuda.is_available():
+        gpu_info = torch.cuda.get_device_name(0)
+        status = "ok"
+    else:
+        gpu_info = "NONE - RUNNING ON CPU!"
+        status = "degraded"
+        
+    return jsonify({"status": status, "gpu": gpu_info}), 200
 
 if __name__ == "__main__":
     # Host 0.0.0.0 is required for Docker containers to be accessible

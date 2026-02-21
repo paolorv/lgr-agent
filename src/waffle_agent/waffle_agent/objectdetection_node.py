@@ -8,6 +8,7 @@ import requests
 import time
 
 import json
+from rclpy.qos import qos_profile_sensor_data
 
 class ObjectDetectionClient(Node):
     def __init__(self):
@@ -25,9 +26,10 @@ class ObjectDetectionClient(Node):
         # FRAME SUBSCRIPTION
         self.sub = self.create_subscription(
             Image, 
-            '/camera/image_raw', 
+            #'/camera/image_raw',
+            '/zed/zed_node/rgb/color/rect/image',
             self.img_callback, 
-            10
+            qos_profile_sensor_data
         )
         
         # PROCESS MEMORY ITEM EVERY N SECONDS --> Callback posts to the memory server
@@ -39,6 +41,7 @@ class ObjectDetectionClient(Node):
 
     def img_callback(self, msg):
         """Keep latest available frame."""
+        self.get_logger().info("Received Image payload")
         try:
             self.latest_cv_img = self.bridge.imgmsg_to_cv2(msg, "bgr8")
         except Exception as e:
