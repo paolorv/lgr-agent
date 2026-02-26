@@ -1,0 +1,5 @@
+# To test locally, use:
+# source ~/.venvs/testvenv/bin/activate
+
+sudo apt-get install python3-tk # for Ubuntu GUI
+pip install networkx sentence-transformers numpy matplotlib
