@@ -1,3 +1,0 @@
-float32[] query_position
----
-GraphResult[] top_k_results
