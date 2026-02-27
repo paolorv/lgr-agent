@@ -1,5 +1,5 @@
 # Request
-float64 query_time_sec       # Unix timestamp in seconds
+float64 query_time       # Unix timestamp in seconds
 int32   top_k                # Optional override; 0 means use server default
 ---
 # Response

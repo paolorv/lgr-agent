@@ -1,46 +1,3 @@
-#!/usr/bin/env python3
-### !!! TO RUN IN THE VENV WITH FLASK INSTALLED
-from flask import Flask, request, jsonify
-from remembr.agents.remembr_agent import ReMEmbRAgent
-from remembr.memory.milvus_memory import MilvusMemory
-from remembr.memory.memory import MemoryItem
-
-app = Flask(__name__)
-
-# Initialize memory + agent
-memory = MilvusMemory("test_collection", db_ip="127.0.0.1", db_port=19530)
-#memory.reset()
-
-#memory_item = MemoryItem(
-#    caption="I see a desk", 
-#    time=1.1, 
-#    position=[-6.0, 2.0, 0.0], 
-#    theta=3.14
-#)
-#memory.insert(memory_item)
-
-#memory_item = MemoryItem(
-#    caption="I see a big fridge", 
-#    time=1.1, 
-#    position=[7.64, -1.07, 0.0], 
-#    theta=3.14
-#)
-#memory.insert(memory_item)
-
-#memory_item = MemoryItem(
-#    caption="I see a nice window looking outside", 
-#    time=1.1, 
-#    position=[9.0, 2.0, 0.0], 
-#    theta=3.14
-#)
-#memory.insert(memory_item)
-
-print("MEMORY INITIALIZATION SUCCESS.")
-
-ltm_agent = ReMEmbRAgent(llm_type="gpt-4")
-ltm_agent.set_memory(memory)
-print("Remembr server ready!")
-
 @app.route("/query", methods=["POST"])
 def query():
     data = request.get_json()
@@ -48,14 +5,27 @@ def query():
     if not query_text:
         return jsonify({"error": "No query provided"}), 400
     try:
+        # 1. Let the agent generate the conversational text
         response = ltm_agent.query(query_text)
-        pos = getattr(response, "position", None)
+        
+        # 2. Query the memory directly to get the closest MemoryItem
+        # (Replace .search or .retrieve with whatever method your MilvusMemory uses)
+        retrieved_memories = memory.search(query_text, top_k=1) 
+        
+        pos_list = None
+        if retrieved_memories:
+            raw_pos = retrieved_memories[0].position
+            
+            # 3. Handle the NumPy array conversion for jsonify
+            if hasattr(raw_pos, "tolist"):
+                pos_list = raw_pos.tolist()
+            elif isinstance(raw_pos, (list, tuple)):
+                pos_list = list(raw_pos)
+
         return jsonify({
             "text": response.text,
-            "position": pos if pos else None
+            "position": pos_list
         })
+        
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8000)

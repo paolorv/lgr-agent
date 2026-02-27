@@ -33,8 +33,8 @@ logger = None  # Global logger variable (Logging is enabled only for streaming=F
 
 @tool
 def cool_turtle_tool():
-    """A cool turtle tool that doesn't really do anything."""
-    return "This is a cool turtle tool! It doesn't do anything, but it's cool."
+    """Tool example."""
+    return "This is just a tool example"
 
 class TurtleAgent(ROSA):
     def __init__(self, ros_node, streaming: bool = False, verbose: bool = True):
@@ -50,7 +50,7 @@ class TurtleAgent(ROSA):
         blast_off = Tool(
             name="blast_off",
             func=self.blast_off,
-            description="Make the turtle blast off!",
+            description="Make the robot blast off!",
         )
 
         super().__init__(
@@ -66,12 +66,9 @@ class TurtleAgent(ROSA):
         )
 
         self.examples = [
-            "Give me a ROS tutorial using the turtlesim.",
-            "Show me how to move the turtle forward.",
-            "Draw a 5-point star using the turtle.",
-            "Teleport to (3, 3) and draw a small hexagon.",
-            "Give me a list of nodes, topics, services, params, and log files.",
-            "Change the background color to light blue and the pen color to red.",
+            "Show me around the environment.",
+            "Request the robot where's the closest building.",
+            "Draw a 5-point star from your current position.",
         ]
 
         self.command_handler = {

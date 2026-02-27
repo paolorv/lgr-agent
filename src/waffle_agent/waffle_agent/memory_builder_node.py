@@ -59,12 +59,22 @@ class MemoryBuilderNode(Node):
 
         # Extract info from the odometry message
         position, angle, pose_time = format_pose_msg(self.pose_msg)
-        #self.logger.info("MARK1 (pose formatted)")
+        self.logger.info("MARK1 (pose formatted)")
+
+        #ADDED
+        #position, angle, pose_time = format_pose_msg(self.pose_msg)
+        #current_x = position[0]
+        #current_y = position[1]
+        #current_z = position[2]
+        #current_yaw = angle
+        #current_pose = (current_x, current_y, current_z)
+
 
         memory_item = MemoryItem(
             caption=msg.data,
             time=pose_time,
             position=position,
+            #position=current_pose,
             theta=angle
         )
 

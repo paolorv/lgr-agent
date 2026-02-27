@@ -30,11 +30,11 @@ class BatchSemanticGraph(Node):
 
         self.declare_parameter("pose_topic", "/odometry")
         self.declare_parameter("label_topic", "/labels")
-        self.declare_parameter("top_k_return", 100)  # Objects returned from sevice calls
+        self.declare_parameter("top_k_return", 50)  # Objects returned from sevice calls
         
         # Hyperparameters
         self.SPATIAL_THRESH = 10.0  # Meters
-        self.ANGLE_THRESH = np.radians(359.999) # +/- degrees field of view
+        self.ANGLE_THRESH = np.radians(359.999) # +/- degrees field of view # UNUSED
         self.SEMANTIC_THRESH = 0.75
 
         # Embedder & Graph
@@ -91,7 +91,7 @@ class BatchSemanticGraph(Node):
 
         # Create a timer to update the plot at 2Hz (every 0.5s)
         # This prevents blocking your main sensor callbacks
-        self.viz_timer = self.create_timer(1.0, self.update_plot)
+        self.viz_timer = self.create_timer(10.0, self.update_plot)
 
     # CALLBACK TO KEEP ROBOT POSITION UPDATED
     def pose_callback(self, msg: Odometry):
@@ -425,6 +425,8 @@ class BatchSemanticGraph(Node):
             
             # Plot Nodes (Blue Circles)
             # alpha=0.5 helps see overlapping nodes
+            self.ax.clear() ##CHECK
+
             self.ax.scatter(ys, xs, c='blue', s=100, alpha=0.5, edgecolors='k', zorder=5)
 
             # Annotate with Background Box for Readability

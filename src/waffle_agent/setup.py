@@ -32,6 +32,8 @@ setup(
             'memory_builder_node = waffle_agent.memory_builder_node:main',
             'objectdetection_node = waffle_agent.objectdetection_node:main',
             'graphmemory_manager = waffle_agent.graphmemory_manager:main',
+            'coda_player = waffle_agent.coda_player:main',
+            'evaluator_node = waffle_agent.evaluator_node:main',
         ],
     },
 )
