@@ -1,9 +1,10 @@
 import os
 import torch
+import gc
+import io
 from flask import Flask, request, jsonify
 from transformers import AutoProcessor, AutoModelForCausalLM
 from PIL import Image
-import io
 
 app = Flask(__name__)
 
@@ -14,8 +15,7 @@ torch_dtype = torch.float16 if torch.cuda.is_available() else torch.float32
 
 print(f"Initializing Florence-2 Service on {device}...")
 
-# LOAD MODEL (Global variable, loaded once at startup)
-# We use 'eager' attention to prevent the 4.46+ transformers crash
+# LOAD MODEL
 model = AutoModelForCausalLM.from_pretrained(
     model_id, 
     torch_dtype=torch_dtype, 
@@ -30,9 +30,9 @@ processor = AutoProcessor.from_pretrained(
 
 print("Florence-2 Service Ready!")
 
+@torch.inference_mode()
 def run_inference(image, task_prompt):
     """Process frame with selected task from input_ids"""
-    # Ensure RGB
     if image.mode != "RGB":
         image = image.convert("RGB")
 
@@ -52,76 +52,65 @@ def run_inference(image, task_prompt):
         task=task_prompt, 
         image_size=(image.width, image.height)
     )
+    
+    # --- CRITICAL TENSOR CLEANUP ---
+    del inputs
+    del generated_ids
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+        
     return parsed_answer
+
+
+def process_request(request_obj, default_task):
+    """Helper to handle image loading, inference, and memory clearing for all endpoints."""
+    if 'file' not in request_obj.files:
+        return jsonify({"error": "No file part provided"}), 400
+    
+    file = request_obj.files['file']
+    task = request_obj.form.get("task", default_task)
+    
+    if file.filename == '':
+        return jsonify({"error": "No file selected"}), 400
+
+    try:
+        # Load image safely
+        raw_bytes = file.read()
+        image = Image.open(io.BytesIO(raw_bytes))
+        
+        # Run inference
+        result = run_inference(image, task)
+        
+        # --- CRITICAL RAM CLEANUP ---
+        image.close()
+        del raw_bytes
+        gc.collect()
+        
+        return jsonify({
+            "task": task,
+            "result": result[task]
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
 @app.route("/caption", methods=["POST"])
 def caption():
-    """
-    Endpoint to receive an image and return a caption.
-    Expects 'file' in multipart/form-data.
-    Optional: 'task' form field (default: <MORE_DETAILED_CAPTION>)
-    """
-    if 'file' not in request.files:
-        return jsonify({"error": "No file part provided"}), 400
-    
-    file = request.files['file']
-    task = request.form.get("task", "<MORE_DETAILED_CAPTION>")
-    
-    if file.filename == '':
-        return jsonify({"error": "No file selected"}), 400
+    return process_request(request, "<MORE_DETAILED_CAPTION>")
 
-    try:
-        # Load image from bytes
-        image = Image.open(io.BytesIO(file.read()))
-        
-        # Run inference
-        result = run_inference(image, task)
-        
-        # Return JSON
-        return jsonify({
-            "task": task,
-            "result": result[task] # Extract just the text/data
-        })
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-    
 @app.route("/labels", methods=["POST"])
 def labels():
-    """
-    Endpoint to receive an image and return a set of labels.
-    Expects 'file' in multipart/form-data.
-    Optional: 'task' form field (default: <MORE_DETAILED_CAPTION>)
-    """
-    if 'file' not in request.files:
-        return jsonify({"error": "No file part provided"}), 400
-    
-    file = request.files['file']
-    task = request.form.get("task", "<OD>")
-    
-    if file.filename == '':
-        return jsonify({"error": "No file selected"}), 400
+    # Regular Object Detection (Usually 5-15 objects)
+    return process_request(request, "<OD>")
 
-    try:
-        # Load image from bytes
-        image = Image.open(io.BytesIO(file.read()))
-        
-        # Run inference
-        result = run_inference(image, task)
-        
-        # Return JSON
-        return jsonify({
-            "task": task,
-            "result": result[task] # Extract just the text/data
-        })
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+@app.route("/dlabels", methods=["POST"])
+def dlabels():
+    # Dense Region Captioning (Usually 30-100 descriptive boxes)
+    return process_request(request, "<DENSE_REGION_CAPTION>")
 
 @app.route("/health", methods=["GET"])
 def health():
     return jsonify({"status": "ok", "gpu": torch.cuda.get_device_name(0)}), 200
 
 if __name__ == "__main__":
-    # Host 0.0.0.0 is required for Docker containers to be accessible
     app.run(host="0.0.0.0", port=8001)
