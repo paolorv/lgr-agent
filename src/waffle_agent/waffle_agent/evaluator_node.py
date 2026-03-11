@@ -479,7 +479,7 @@ class RosaNaVQAEvaluator(Node):
         self.get_logger().info(f"=========================================\n")
 
         # 4. Export to Master CSV
-        csv_file = "/app/NaVQA_eval/remembr/remembr/CSVRESULTS/master_evaluation_results.csv"
+        csv_file = "/app/NaVQA_eval/remembr/remembr/eval_results/evaluation_results.csv"
         os.makedirs(os.path.dirname(csv_file), exist_ok=True)
         file_exists = os.path.isfile(csv_file)
         
