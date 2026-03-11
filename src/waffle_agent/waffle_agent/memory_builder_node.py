@@ -53,32 +53,38 @@ class MemoryBuilderNode(Node):
 
     def caption_callback(self, msg: String):
 
+        # if self.pose_msg is None:
+        #     self.logger.warning("No pose message received yet; cannot create memory item.")
+        #     return
+
+        # # Extract info from the odometry message
+        # position, angle, pose_time = format_pose_msg(self.pose_msg)
+
+        # memory_item = MemoryItem(
+        #     caption=msg.data,
+        #     time=pose_time,
+        #     position=position,
+        #     #position=current_pose,
+        #     theta=angle
+        # )
+
         if self.pose_msg is None:
             self.logger.warning("No pose message received yet; cannot create memory item.")
             return
 
         # Extract info from the odometry message
-        position, angle, pose_time = format_pose_msg(self.pose_msg)
-        self.logger.info("MARK1 (pose formatted)")
-
-        #ADDED
-        #position, angle, pose_time = format_pose_msg(self.pose_msg)
-        #current_x = position[0]
-        #current_y = position[1]
-        #current_z = position[2]
-        #current_yaw = angle
-        #current_pose = (current_x, current_y, current_z)
-
+        position, angle, _ = format_pose_msg(self.pose_msg)
+        
+        # ---> EXPLICITLY EXTRACT HISTORICAL TIME <---
+        historical_time = self.pose_msg.header.stamp.sec + (self.pose_msg.header.stamp.nanosec * 1e-9)
 
         memory_item = MemoryItem(
             caption=msg.data,
-            time=pose_time,
+            time=historical_time,  # <--- Pass the 2023 time here
             position=position,
-            #position=current_pose,
             theta=angle
         )
 
-        #self.logger.info("MARK2 (created MemoryItem)")
 
         try:
             self.memory.insert(memory_item)

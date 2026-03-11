@@ -99,7 +99,7 @@ def query_long_term_memory(query: str):
        data = resp.json()
        pos = data.get("position")
        if pos: ## POSITIONAL QUERIES
-           if NODE: NODE.get_logger().info(f"The Retrieved position was: '{pos}'")
+           if NODE: NODE.get_logger().info(f"The Retrieved position was: '{pos}'. Details: '{data['text']}'")
            return f"Memory query successful. Location: {data['text']}. Position: [x={pos[0]:.2f}, y={pos[1]:.2f}, z={pos[2]:.2f}]."
        else:
            if NODE: NODE.get_logger().info(f"No position found. Details: '{data['text']}'")
@@ -145,7 +145,13 @@ def query_graph_memory_semantical(query: str):
                 "similarity": round(item.score, 2),
                 "pos": [round(p, 3) for p in item.position]
             })
-        return json.dumps(output)
+        #return json.dumps(output)
+    
+
+        # ---> ADD LOGGING HERE <---
+        result_str = json.dumps(output)
+        NODE.get_logger().info(f"[WAFFLE TOOL] Semantical returning: {result_str}")
+        return result_str
     else:
         return f"Error: {future.exception()}"
 
@@ -195,7 +201,13 @@ def query_graph_memory_positional(query: str):
                 "distance": round(item.score, 2),   # Round to avoid decimal explosionm
                 "pos": [round(p, 3) for p in item.position]
             })
-        return json.dumps(output)
+        #return json.dumps(output)
+    
+
+        # ---> ADD LOGGING HERE <---
+        result_str = json.dumps(output)
+        NODE.get_logger().info(f"[WAFFLE TOOL] Positional returning: {result_str}")
+        return result_str
     else:
         return f"Error: {future.exception()}"
     
@@ -328,7 +340,13 @@ def query_graph_memory_by_time(query: str):
                 "time_difference_seconds": round(item.score, 2), # Typically score is the time delta
                 "pos": [round(p, 3) for p in item.position]
             })
-        return json.dumps(output)
+        #return json.dumps(output)
+
+
+        # ---> ADD LOGGING HERE <---
+        result_str = json.dumps(output)
+        NODE.get_logger().info(f"[WAFFLE TOOL] Temporal returning: {result_str}")
+        return result_str
     else:
         return f"Error: {future.exception()}"
 

@@ -30,10 +30,10 @@ class BatchSemanticGraph(Node):
 
         self.declare_parameter("pose_topic", "/odometry")
         self.declare_parameter("label_topic", "/labels")
-        self.declare_parameter("top_k_return", 50)  # Objects returned from sevice calls
+        self.declare_parameter("top_k_return", 60)  # Objects returned from sevice calls
         
         # Hyperparameters
-        self.SPATIAL_THRESH = 10.0  # Meters
+        self.SPATIAL_THRESH = 5.0  # Meters
         self.ANGLE_THRESH = np.radians(359.999) # +/- degrees field of view # UNUSED
         self.SEMANTIC_THRESH = 0.75
 
@@ -91,7 +91,7 @@ class BatchSemanticGraph(Node):
 
         # Create a timer to update the plot at 2Hz (every 0.5s)
         # This prevents blocking your main sensor callbacks
-        self.viz_timer = self.create_timer(10.0, self.update_plot)
+        ##############self.viz_timer = self.create_timer(10.0, self.update_plot)
 
     # CALLBACK TO KEEP ROBOT POSITION UPDATED
     def pose_callback(self, msg: Odometry):
@@ -130,12 +130,16 @@ class BatchSemanticGraph(Node):
         labels_in_frame: list of strings ['cup', 'cup', 'bottle']
         current_pose: tuple (x, y, yaw)
         """
-        
+        self.get_logger().error("START LABEL PROCESSING.")
         position, angle, pose_time = format_pose_msg(self.pose_msg)
         current_x = position[0]
         current_y = position[1]
         current_yaw = angle
         current_pose = (current_x, current_y, current_yaw)
+
+        # ---> EXTRACT HISTORICAL TIME <---
+        hist_time_sec = self.pose_msg.header.stamp.sec + (self.pose_msg.header.stamp.nanosec * 1e-9)
+
 
         # FIND RELEVANT EXISTING NODES (Spatial & Angular Gating)
         # We only want to match against nodes that are CLOSE and in FRONT of us.
@@ -182,73 +186,116 @@ class BatchSemanticGraph(Node):
             
             count_known = len(existing_matches)
             
+            # RECONCILE OLD
+            # if count_seen > count_known:
+            #     # CASE A: WE SEE MORE THAN WE KNEW. 
+            #     # Action: Update all known ones, create (seen - known) new ones.
+                
+            #     # Update existing (Refresh timestamp/position)
+            #     for nid in existing_matches:
+            #         self.update_node(nid, current_pose)
+                
+            #     # Create NEW nodes
+            #     num_to_create = count_seen - count_known
+            #     for _ in range(num_to_create):
+            #         self.create_node(label, embedding, current_pose)
+                    
+            # else:
+            #     # CASE B: WE SEE FEWER or EQUAL TO WHAT WE KNEW.
+            #     # Action: Just update the closest 'count_seen' nodes.
+            #     # (We don't delete the extras immediately; maybe they are occluded)
+            #     # TODO: HANDLE OBJECTS NOT BEING SEEN (DELETE NODES)
+            #     for i in range(count_seen):
+            #         self.update_node(existing_matches[i], current_pose)
+
             # RECONCILE
             if count_seen > count_known:
-                # CASE A: WE SEE MORE THAN WE KNEW. 
-                # Action: Update all known ones, create (seen - known) new ones.
-                
-                # Update existing (Refresh timestamp/position)
                 for nid in existing_matches:
-                    self.update_node(nid, current_pose)
+                    self.update_node(nid, current_pose, hist_time_sec) # <--- PASS TIME
                 
-                # Create NEW nodes
                 num_to_create = count_seen - count_known
                 for _ in range(num_to_create):
-                    self.create_node(label, embedding, current_pose)
+                    self.create_node(label, embedding, current_pose, hist_time_sec) # <--- PASS TIME
                     
             else:
-                # CASE B: WE SEE FEWER or EQUAL TO WHAT WE KNEW.
-                # Action: Just update the closest 'count_seen' nodes.
-                # (We don't delete the extras immediately; maybe they are occluded)
-                # TODO: HANDLE OBJECTS NOT BEING SEEN (DELETE NODES)
                 for i in range(count_seen):
-                    self.update_node(existing_matches[i], current_pose)
+                    self.update_node(existing_matches[i], current_pose, hist_time_sec) # <--- PASS TIME
 
-    def create_node(self, label, embedding, pose):
-        # Jitter so markers don't overlap perfectly in Rviz
-        #jx = np.random.uniform(-0.1, 0.1)
-        #jy = np.random.uniform(-0.1, 0.1)
-        jx = 0
-        jy = 0
-        display_pose = (pose[0]+jx, pose[1]+jy, pose[2])
+
+
+
+    # def create_node(self, label, embedding, pose):
+    #     # Jitter so markers don't overlap perfectly in Rviz
+    #     #jx = np.random.uniform(-0.1, 0.1)
+    #     #jy = np.random.uniform(-0.1, 0.1)
+    #     jx = 0
+    #     jy = 0
+    #     display_pose = (pose[0]+jx, pose[1]+jy, pose[2])
+
+    #     self.graph.add_node(
+    #         self.node_id_counter,
+    #         label=label,
+    #         embedding=embedding,
+    #         pos=display_pose, 
+    #         #timestamps=self.get_clock().now() 
+    #         timestamps=[self.get_clock().now()] # IF USING LIST OF TIMES
+    #     )
+    #     #self.get_logger().info(f"Created NEW {label} (ID: {self.node_id_counter})")
+    #     self.node_id_counter += 1
+
+    # def update_node(self, node_id, current_robot_pose):
+    #     # 1. Get the old position data
+    #     old_x, old_y, _ = self.graph.nodes[node_id]['pos']
+        
+    #     # 2. Get the new observation (Current Robot Position)
+    #     new_x, new_y, _ = current_robot_pose
+
+    #     # 3. Moving Average Logic
+    #     # alpha controls how fast the node moves towards the new position.
+    #     # 0.1 = very stable, 1.0 = jumps instantly to new position.
+    #     alpha = 0.5 
+
+    #     updated_x = (old_x * (1 - alpha)) + (new_x * alpha)
+    #     updated_y = (old_y * (1 - alpha)) + (new_y * alpha)
+
+    #     # 4. Save back to Graph
+    #     # We keep the original yaw or update it, usually yaw is less critical for point objects
+    #     self.graph.nodes[node_id]['pos'] = (updated_x, updated_y, current_robot_pose[2])
+    #     #self.graph.nodes[node_id]['last_seen'] = self.get_clock().now()
+        
+    #     # 5. Append the new timestamp to the historical list IF USING TIME LIST
+    #     current_time = self.get_clock().now()
+    #     self.graph.nodes[node_id]['timestamps'].append(current_time)
+        
+    #     # Log strictly for debugging (optional)
+    #     #self.get_logger().info(f"Refined Pos for ID {node_id}: ({updated_x:.2f}, {updated_y:.2f})")
+
+    def create_node(self, label, embedding, pose, hist_time_sec): # <--- Added argument
+        display_pose = (pose[0], pose[1], pose[2])
 
         self.graph.add_node(
             self.node_id_counter,
             label=label,
             embedding=embedding,
             pos=display_pose, 
-            #timestamps=self.get_clock().now() 
-            timestamps=[self.get_clock().now()] # IF USING LIST OF TIMES
+            timestamps=[hist_time_sec] # <--- Storing raw 2023 float!
         )
-        self.get_logger().info(f"Created NEW {label} (ID: {self.node_id_counter})")
         self.node_id_counter += 1
 
-    def update_node(self, node_id, current_robot_pose):
-        # 1. Get the old position data
+    def update_node(self, node_id, current_robot_pose, hist_time_sec): # <--- Added argument
         old_x, old_y, _ = self.graph.nodes[node_id]['pos']
-        
-        # 2. Get the new observation (Current Robot Position)
         new_x, new_y, _ = current_robot_pose
 
-        # 3. Moving Average Logic
-        # alpha controls how fast the node moves towards the new position.
-        # 0.1 = very stable, 1.0 = jumps instantly to new position.
         alpha = 0.5 
-
         updated_x = (old_x * (1 - alpha)) + (new_x * alpha)
         updated_y = (old_y * (1 - alpha)) + (new_y * alpha)
 
-        # 4. Save back to Graph
-        # We keep the original yaw or update it, usually yaw is less critical for point objects
         self.graph.nodes[node_id]['pos'] = (updated_x, updated_y, current_robot_pose[2])
-        #self.graph.nodes[node_id]['last_seen'] = self.get_clock().now()
         
-        # 5. Append the new timestamp to the historical list IF USING TIME LIST
-        current_time = self.get_clock().now()
-        self.graph.nodes[node_id]['timestamps'].append(current_time)
-        
-        # Log strictly for debugging (optional)
-        self.get_logger().info(f"Refined Pos for ID {node_id}: ({updated_x:.2f}, {updated_y:.2f})")
+        # <--- Append the raw 2023 float!
+        self.graph.nodes[node_id]['timestamps'].append(hist_time_sec)
+
+
 
     #def publish_markers(self):
     #    # ADD FOR RVIZ
@@ -344,26 +391,63 @@ class BatchSemanticGraph(Node):
         response.top_k_results = results_list
         return response
     
-    
+    #WORKED WITH NOW() TIMES
+    # def timesearch_callback(self, request, response):
+    #     """
+    #     Returns nodes ranked by how close their LAST SEEN timestamp is
+    #     to the requested query time (Unix seconds, float).
+    #     """
+    #     query_time_ns = int(request.query_time * 1e9)  # Convert to nanoseconds
+    #     top_k_limit = request.top_k if request.top_k > 0 else self.get_parameter("top_k_return").value
+
+    #     candidates = []
+
+    #     for node_id, data in self.graph.nodes(data=True):
+    #         timestamps = data.get('timestamps', [])
+    #         if not timestamps:
+    #             continue
+
+    #         # Convert all stored ROS Time objects to nanoseconds and find the closest one
+    #         ts_ns_list = [t.nanoseconds for t in timestamps]
+    #         closest_ts_ns = min(ts_ns_list, key=lambda t: abs(t - query_time_ns))
+    #         time_delta_sec = abs(closest_ts_ns - query_time_ns) / 1e9  # Back to seconds for readability
+
+    #         candidates.append((node_id, data, time_delta_sec))
+
+    #     # Sort by smallest time delta (closest to the requested time)
+    #     top_k = sorted(candidates, key=lambda x: x[2])[:top_k_limit]
+
+    #     results_list = []
+    #     for nid, data, delta in top_k:
+    #         res = GraphResult()
+    #         res.node_id = int(nid)
+    #         res.label = str(data.get('label', 'unknown'))
+    #         res.score = float(delta)          # score = seconds away from query time
+    #         res.position = [float(v) for v in data['pos']]
+    #         results_list.append(res)
+
+    #     response.top_k_results = results_list
+    #     return response
+
     def timesearch_callback(self, request, response):
         """
         Returns nodes ranked by how close their LAST SEEN timestamp is
-        to the requested query time (Unix seconds, float).
+        to the requested query time.
         """
-        query_time_ns = int(request.query_time_sec * 1e9)  # Convert to nanoseconds
+        # Get target time as float
+        query_time_sec = float(request.query_time)
         top_k_limit = request.top_k if request.top_k > 0 else self.get_parameter("top_k_return").value
 
         candidates = []
 
         for node_id, data in self.graph.nodes(data=True):
-            timestamps = data.get('timestamps', [])
-            if not timestamps:
+            timestamps_sec = data.get('timestamps', [])
+            if not timestamps_sec:
                 continue
 
-            # Convert all stored ROS Time objects to nanoseconds and find the closest one
-            ts_ns_list = [t.nanoseconds for t in timestamps]
-            closest_ts_ns = min(ts_ns_list, key=lambda t: abs(t - query_time_ns))
-            time_delta_sec = abs(closest_ts_ns - query_time_ns) / 1e9  # Back to seconds for readability
+            # Find the closest timestamp (all are now floats)
+            closest_ts = min(timestamps_sec, key=lambda t: abs(t - query_time_sec))
+            time_delta_sec = abs(closest_ts - query_time_sec) 
 
             candidates.append((node_id, data, time_delta_sec))
 
@@ -375,13 +459,12 @@ class BatchSemanticGraph(Node):
             res = GraphResult()
             res.node_id = int(nid)
             res.label = str(data.get('label', 'unknown'))
-            res.score = float(delta)          # score = seconds away from query time
+            res.score = float(delta)          
             res.position = [float(v) for v in data['pos']]
             results_list.append(res)
 
         response.top_k_results = results_list
         return response
-
 
 
     def update_plot(self):
@@ -443,7 +526,7 @@ class BatchSemanticGraph(Node):
                 )
 
         self.ax.legend(loc='upper right')
-        plt.draw()
+        #plt.draw()
         plt.pause(0.001)
 
 

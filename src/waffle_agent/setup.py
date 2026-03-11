@@ -34,6 +34,7 @@ setup(
             'graphmemory_manager = waffle_agent.graphmemory_manager:main',
             'coda_player = waffle_agent.coda_player:main',
             'evaluator_node = waffle_agent.evaluator_node:main',
+            'json_memory_populator = waffle_agent.json_memory_populator:main',
         ],
     },
 )

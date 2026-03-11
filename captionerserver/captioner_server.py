@@ -9,7 +9,7 @@ from PIL import Image
 app = Flask(__name__)
 
 # --- GLOBAL CONFIG ---
-model_id = "microsoft/Florence-2-large"
+model_id = "microsoft/Florence-2-base-ft"
 device = "cuda" if torch.cuda.is_available() else "cpu"
 torch_dtype = torch.float16 if torch.cuda.is_available() else torch.float32
 
@@ -62,35 +62,65 @@ def run_inference(image, task_prompt):
     return parsed_answer
 
 
+# def process_request(request_obj, default_task):
+#     """Helper to handle image loading, inference, and memory clearing for all endpoints."""
+#     if 'file' not in request_obj.files:
+#         return jsonify({"error": "No file part provided"}), 400
+    
+#     file = request_obj.files['file']
+#     task = request_obj.form.get("task", default_task)
+    
+#     if file.filename == '':
+#         return jsonify({"error": "No file selected"}), 400
+
+#     try:
+#         # Load image safely
+#         raw_bytes = file.read()
+#         image = Image.open(io.BytesIO(raw_bytes))
+        
+#         # Run inference
+#         result = run_inference(image, task)
+        
+#         # --- CRITICAL RAM CLEANUP ---
+#         image.close()
+#         del raw_bytes
+#         gc.collect()
+        
+#         return jsonify({
+#             "task": task,
+#             "result": result[task]
+#         })
+#     except Exception as e:
+#         return jsonify({"error": str(e)}), 500
+
 def process_request(request_obj, default_task):
-    """Helper to handle image loading, inference, and memory clearing for all endpoints."""
     if 'file' not in request_obj.files:
         return jsonify({"error": "No file part provided"}), 400
-    
+
     file = request_obj.files['file']
     task = request_obj.form.get("task", default_task)
-    
+
     if file.filename == '':
         return jsonify({"error": "No file selected"}), 400
 
     try:
-        # Load image safely
         raw_bytes = file.read()
+        file.close()                          # release file handle immediately
         image = Image.open(io.BytesIO(raw_bytes))
         
-        # Run inference
         result = run_inference(image, task)
         
-        # --- CRITICAL RAM CLEANUP ---
+        result_value = result[task]           # extract before freeing
+        del result
+
         image.close()
+        del image                             # PIL buffer cleanup
         del raw_bytes
         gc.collect()
         
-        return jsonify({
-            "task": task,
-            "result": result[task]
-        })
+        return jsonify({"task": task, "result": result_value})
     except Exception as e:
+        gc.collect()                          # also collect on error paths
         return jsonify({"error": str(e)}), 500
 
 
@@ -113,4 +143,4 @@ def health():
     return jsonify({"status": "ok", "gpu": torch.cuda.get_device_name(0)}), 200
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8001)
+    app.run(host="0.0.0.0", port=8001, threaded=False)

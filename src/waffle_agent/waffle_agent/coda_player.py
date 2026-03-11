@@ -45,6 +45,8 @@ class CodaDatasetPlayer(Node):
         self.get_logger().info(f"Found sequences to process: {seq_folders}")
 
         for seq_id in seq_folders:
+            #if seq_id == '0':
+            #    continue
             self.get_logger().info(f"\n=========================================\nStarting extraction for Sequence {seq_id}\n=========================================")
             self.play_sequence(seq_id)
 
@@ -115,7 +117,7 @@ class CodaDatasetPlayer(Node):
         # Save to disk
         out_dir = f"./data/captions/{seq_id}"
         os.makedirs(out_dir, exist_ok=True)
-        json_filename = f"{out_dir}/captions_Florence2-large_{int(self.time_interval)}_secs.json"
+        json_filename = f"{out_dir}/captions_Florence2-base-ft_{int(self.time_interval)}_secs.json"
         
         with open(json_filename, 'w') as f:
             json.dump(captions_out, f, cls=NumpyEncoder, indent=4)

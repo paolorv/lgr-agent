@@ -39,5 +39,7 @@ COPY captioner_server.py .
 # 5. Expose the port
 EXPOSE 8001
 
+RUN export MALLOC_ARENA_MAX=2
+
 # 6. Run the server
 CMD ["python", "captioner_server.py"]
