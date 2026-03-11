@@ -6,8 +6,14 @@ from cv_bridge import CvBridge
 import cv2
 import requests
 import time
-
 import json
+
+# CONSOLE GRAPHICS
+from rich.console import Console, Group
+from rich.live import Live
+from rich.markdown import Markdown
+from rich.panel import Panel
+from rich.text import Text
 
 class ObjectDetectionClient(Node):
     def __init__(self):
@@ -25,7 +31,7 @@ class ObjectDetectionClient(Node):
         # FRAME SUBSCRIPTION
         self.sub = self.create_subscription(
             Image, 
-            '/camera/image_raw', 
+            '/zed/zed_node/rgb/color/rect/image', 
             self.img_callback, 
             10
         )
@@ -106,7 +112,7 @@ class ObjectDetectionClient(Node):
             img_bytes = buffer.tobytes()
 
             files = {'file': ('camera_frame.jpg', img_bytes, 'image/jpeg')}
-            data = {'task': '<OD>'}
+            data = {'task': '<DENSE_REGION_CAPTION>'} ###CHANGE BASED ON THE TASK!
 
             self.get_logger().info("Sending image to server...")
             start = time.time()
@@ -127,9 +133,12 @@ class ObjectDetectionClient(Node):
                     labels_msg.data = json.dumps(labels_list) #### CHECK CONVERSION ############
                     
                     self.publisher_.publish(labels_msg)
-                    self.get_logger().info(f"Ref: {latency:.2f}s | Published labels: {labels_list}")
-                else:
-                    self.get_logger().info(f"Ref: {latency:.2f}s | No objects detected.")
+                    #self.get_logger().info(f"Ref: {latency:.2f}s | Published labels: {labels_list}")
+
+                    formatted_list = "\n".join([f"• {item}\n" for item in labels_list])
+                    self.print_stream(''.join(formatted_list))
+                #else:
+                    #self.get_logger().info(f"Ref: {latency:.2f}s | No objects detected.")
 
             else:
                 self.get_logger().error(f"Server Error {response.status_code}: {response.text}")
@@ -137,6 +146,12 @@ class ObjectDetectionClient(Node):
         except Exception as e:
             self.get_logger().error(f"Request failed: {e}")
 
+
+    def print_stream(self, text):
+        console = Console()
+        with Live(console=console, auto_refresh=True, vertical_overflow="visible") as live:
+            content_panel = Panel(Markdown(text), title="Detected entities", border_style="blue")
+            live.update(content_panel, refresh=True)
 
 def main():
     rclpy.init()

@@ -26,12 +26,12 @@ def get_prompts():
         
         critical_instructions="When asked about your environment, you MUST use your memory tools to answer. You have two memory systems: "
         "1. GRAPH MEMORY: This is your PRIMARY option. You must use the Graph Memory tools for all standard object retrievals, positional queries, counting objects, and temporal/timestamp lookups. "
-        "2. VECTOR DATABASE (Long Term Memory): You must use this tool ONLY when the user's request requires richer visual descriptions, complex scene context, or when objects with peculiar/highly specific visual characteristics are referenced (e.g., 'What was written on the back of the trailer?'). "
+        "2. VECTOR DATABASE (Long Term Memory): You must use this tool ANYTIME the user's request requires richer visual descriptions, complex scene context, or when objects with peculiar/highly specific visual characteristics are referenced (e.g., 'What was written on the back of the trailer?'). "
         "You must be absolutely spotless and precise in your positional (x, y coordinates), semantical (matching the exact object requested), and temporal (time in seconds) reasoning."
         "When querying the vector database, treat it as another agent that requires a human-like request (don't request 'flower position' but form the query 'where is the position of the flower?')",
         
         constraints_and_guardrails="Do not hallucinate objects, locations, or timestamps. If an object is not in your memory, state that clearly. "
-        "If the Graph Memory fails to return a coherent result for a complex query, you may fall back to querying the Vector Database before returning a negative answer to the user. "
+        "If the Graph Memory fails to return a coherent result for a complex query, asking for details not directly available from graph retrieval, you MUST fall back to querying the Vector Database before returning a negative answer to the user. "
         "If a user asks for something 'closest to me' or 'near me', you must first retrieve your current position using the get_robot_pose tool before querying the positional graph memory. "
         "Wait for navigation commands to fully complete before declaring success.",
         

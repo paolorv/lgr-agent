@@ -24,7 +24,7 @@ class VILACaptionerClient(Node):
         # FRAME SUBSCRIPTION
         self.sub = self.create_subscription(
             Image, 
-            '/camera/image_raw', 
+            '/zed/zed_node/rgb/color/rect/image', 
             self.img_callback, 
             10
         )

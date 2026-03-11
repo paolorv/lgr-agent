@@ -87,8 +87,8 @@ class TurtleAgent(ROSA):
 
     @property
     def greeting(self):
-        greeting = Text("\nWAFFLE AGENT AWAITING COMMAND:\n")
-        greeting.stylize("frame bold blue")
+        greeting = Text("\n EMBODIED-LGR-AGENT AWAITING REQUEST:\n")
+        greeting.stylize("frame bold green")
         greeting.append(f"Try {', '.join(self.command_handler.keys())} or exit.", style="italic")
         return greeting
 
@@ -150,7 +150,7 @@ class TurtleAgent(ROSA):
         # Display returned response using Rich
         console = Console()
         with Live(console=console, auto_refresh=True, vertical_overflow="visible") as live:
-            content_panel = Panel(Markdown(response), title="Final Response", border_style="green")
+            content_panel = Panel(Markdown(response), title="EmbodiedLGR-Agent Response", border_style="bold green")
             live.update(content_panel, refresh=True)
 
 

@@ -1,10 +1,9 @@
 import os
 import torch
-import gc
-import io
 from flask import Flask, request, jsonify
 from transformers import AutoProcessor, AutoModelForCausalLM
 from PIL import Image
+import io
 
 app = Flask(__name__)
 
@@ -15,24 +14,58 @@ torch_dtype = torch.float16 if torch.cuda.is_available() else torch.float32
 
 print(f"Initializing Florence-2 Service on {device}...")
 
-# LOAD MODEL
+# LOAD MODEL (Global variable, loaded once at startup)
+# We use 'eager' attention to prevent the 4.46+ transformers crash
+#model = AutoModelForCausalLM.from_pretrained(
+#    model_id, 
+#    torch_dtype=torch_dtype, 
+#    trust_remote_code=True,
+#    attn_implementation="eager"
+#).to(device)
+
+#processor = AutoProcessor.from_pretrained(
+#    model_id, 
+#    trust_remote_code=True
+#)
+
+# LOAD MODEL ON JETSON BUGGY
+# Removed .to(device) at the end, and added device_map="cuda"
+#model = AutoModelForCausalLM.from_pretrained(
+#    model_id, 
+#    torch_dtype=torch_dtype, 
+#    trust_remote_code=True,
+#    attn_implementation="eager",
+#    device_map="cuda"  # <--
+#)
+
+#processor = AutoProcessor.from_pretrained(
+#    model_id, 
+#    trust_remote_code=True
+#)
+
+# LOAD MODEL ON JETSON
+print("Loading model weights...")
+
+# 1. Remove torch_dtype and device_map from from_pretrained
+# 2. Add .to(device, torch_dtype) to the very end
 model = AutoModelForCausalLM.from_pretrained(
     model_id, 
-    torch_dtype=torch_dtype, 
     trust_remote_code=True,
     attn_implementation="eager"
-).to(device)
+).to(device, torch_dtype)
 
 processor = AutoProcessor.from_pretrained(
     model_id, 
     trust_remote_code=True
 )
 
+
 print("Florence-2 Service Ready!")
 
 @torch.inference_mode()
 def run_inference(image, task_prompt):
     """Process frame with selected task from input_ids"""
+    # Ensure RGB
     if image.mode != "RGB":
         image = image.convert("RGB")
 
@@ -52,65 +85,84 @@ def run_inference(image, task_prompt):
         task=task_prompt, 
         image_size=(image.width, image.height)
     )
-    
-    # --- CRITICAL TENSOR CLEANUP ---
-    del inputs
-    del generated_ids
-    if torch.cuda.is_available():
-        torch.cuda.empty_cache()
-        
     return parsed_answer
 
-
-def process_request(request_obj, default_task):
-    """Helper to handle image loading, inference, and memory clearing for all endpoints."""
-    if 'file' not in request_obj.files:
+@app.route("/caption", methods=["POST"])
+def caption():
+    """
+    Endpoint to receive an image and return a caption.
+    Expects 'file' in multipart/form-data.
+    Optional: 'task' form field (default: <MORE_DETAILED_CAPTION>)
+    """
+    if 'file' not in request.files:
         return jsonify({"error": "No file part provided"}), 400
     
-    file = request_obj.files['file']
-    task = request_obj.form.get("task", default_task)
+    file = request.files['file']
+    task = request.form.get("task", "<MORE_DETAILED_CAPTION>")
     
     if file.filename == '':
         return jsonify({"error": "No file selected"}), 400
 
     try:
-        # Load image safely
-        raw_bytes = file.read()
-        image = Image.open(io.BytesIO(raw_bytes))
+        # Load image from bytes
+        image = Image.open(io.BytesIO(file.read()))
         
         # Run inference
         result = run_inference(image, task)
         
-        # --- CRITICAL RAM CLEANUP ---
-        image.close()
-        del raw_bytes
-        gc.collect()
-        
+        # Return JSON
         return jsonify({
             "task": task,
-            "result": result[task]
+            "result": result[task] # Extract just the text/data
         })
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+@app.route("/labels", methods=["POST"])
+def labels():
+    """
+    Endpoint to receive an image and return a set of labels.
+    Expects 'file' in multipart/form-data.
+    Optional: 'task' form field (default: <MORE_DETAILED_CAPTION>)
+    """
+    if 'file' not in request.files:
+        return jsonify({"error": "No file part provided"}), 400
+    
+    file = request.files['file']
+    task = request.form.get("task", "<DENSE_REGION_CAPTION>")
+    
+    if file.filename == '':
+        return jsonify({"error": "No file selected"}), 400
+
+    try:
+        # Load image from bytes
+        image = Image.open(io.BytesIO(file.read()))
+        
+        # Run inference
+        result = run_inference(image, task)
+        
+        # Return JSON
+        return jsonify({
+            "task": task,
+            "result": result[task] # Extract just the text/data
+        })
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-
-@app.route("/caption", methods=["POST"])
-def caption():
-    return process_request(request, "<MORE_DETAILED_CAPTION>")
-
-@app.route("/labels", methods=["POST"])
-def labels():
-    # Regular Object Detection (Usually 5-15 objects)
-    return process_request(request, "<OD>")
-
-@app.route("/dlabels", methods=["POST"])
-def dlabels():
-    # Dense Region Captioning (Usually 30-100 descriptive boxes)
-    return process_request(request, "<DENSE_REGION_CAPTION>")
-
 @app.route("/health", methods=["GET"])
 def health():
-    return jsonify({"status": "ok", "gpu": torch.cuda.get_device_name(0)}), 200
+    # <-- UPDATE THIS: Fails gracefully if CUDA isn't attached properly
+    if torch.cuda.is_available():
+        gpu_info = torch.cuda.get_device_name(0)
+        status = "ok"
+    else:
+        gpu_info = "NONE - RUNNING ON CPU!"
+        status = "degraded"
+        
+    return jsonify({"status": status, "gpu": gpu_info}), 200
 
 if __name__ == "__main__":
+    # Host 0.0.0.0 is required for Docker containers to be accessible
     app.run(host="0.0.0.0", port=8001)

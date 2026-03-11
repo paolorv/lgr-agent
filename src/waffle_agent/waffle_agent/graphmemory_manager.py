@@ -7,6 +7,7 @@ import numpy as np
 from sentence_transformers import SentenceTransformer
 from collections import Counter
 import json
+import numpy as np
 
 # Messages
 from nav_msgs.msg import Odometry
@@ -24,16 +25,23 @@ import matplotlib.pyplot as plt
 # Utils for Odometry formatting
 from waffle_agent.common_utils import format_pose_msg
 
+
+# GRAPHICS
+from datetime import datetime
+from collections import deque
+from rich.live import Live
+from rich.table import Table
+
 class BatchSemanticGraph(Node):
     def __init__(self):
         super().__init__('batch_semantic_graph')
 
-        self.declare_parameter("pose_topic", "/odometry")
+        self.declare_parameter("pose_topic", "/odom")
         self.declare_parameter("label_topic", "/labels")
         self.declare_parameter("top_k_return", 50)  # Objects returned from sevice calls
         
         # Hyperparameters
-        self.SPATIAL_THRESH = 10.0  # Meters
+        self.SPATIAL_THRESH = 7.0  # Meters
         self.ANGLE_THRESH = np.radians(359.999) # +/- degrees field of view # UNUSED
         self.SEMANTIC_THRESH = 0.75
 
@@ -83,7 +91,7 @@ class BatchSemanticGraph(Node):
 
         # ADDED VISUALIZATION OF NODES: Setup Matplotlib for real-time plotting
         plt.ion()  # Interactive mode on
-        self.fig, self.ax = plt.subplots()
+        self.fig, self.ax = plt.subplots(num="Semantic Graph Positional Viewer")
         self.ax.set_title("Semantic Graph State")
         self.ax.set_xlabel("X [m]")
         self.ax.set_ylabel("Y [m]")
@@ -91,7 +99,13 @@ class BatchSemanticGraph(Node):
 
         # Create a timer to update the plot at 2Hz (every 0.5s)
         # This prevents blocking your main sensor callbacks
-        self.viz_timer = self.create_timer(10.0, self.update_plot)
+        self.viz_timer = self.create_timer(1.0, self.update_plot)
+
+        # Store the last 15 events to display in the live table
+        self.events = deque(maxlen=15)
+
+        # Help impagination
+        self.get_logger().info(f"STARTED GRAPH MANAGER.\n\n\n\n\n\n\n\n\n\n\n")
 
     # CALLBACK TO KEEP ROBOT POSITION UPDATED
     def pose_callback(self, msg: Odometry):
@@ -104,14 +118,14 @@ class BatchSemanticGraph(Node):
             # Decode the JSON string back into a Python list
             # "[\"car\", \"wheel\", \"wheel\"]" -> ['car', 'wheel', 'wheel']
             labels_in_frame = json.loads(msg.data)
-            self.get_logger().info("Received labels_in_frame.")
+            #self.get_logger().info("Received labels_in_frame.")
             
         except json.JSONDecodeError:
-            self.get_logger().error("Failed to decode incoming labels JSON.")
+            #self.get_logger().error("Failed to decode incoming labels JSON.")
             return
 
         if not labels_in_frame:
-            self.get_logger().info("No labels in received data pack")
+            #self.get_logger().info("No labels in received data pack")
             return
 
         # 1. Get the current robot pose
@@ -123,7 +137,7 @@ class BatchSemanticGraph(Node):
             
             # 3. Update Rviz
             #self.publish_markers()
-        else: self.get_logger().error("No odometry received")
+        #else: self.get_logger().error("No odometry received")
 
     def process_batch(self, labels_in_frame):
         """
@@ -216,14 +230,34 @@ class BatchSemanticGraph(Node):
             self.node_id_counter,
             label=label,
             embedding=embedding,
-            pos=display_pose, 
+            pos=display_pose,
+            views=1,
             #timestamps=self.get_clock().now() 
             timestamps=[self.get_clock().now()] # IF USING LIST OF TIMES
         )
-        self.get_logger().info(f"Created NEW {label} (ID: {self.node_id_counter})")
+        #self.get_logger().info(f"Created NEW {label} (ID: {self.node_id_counter})")
+        
+        # Rich console logging
+        #self.record_event("CREATE", f"{label} (ID: {self.node_id_counter})", display_pose)
+        self.record_event("CREATE", f"\\[ID={self.node_id_counter}] {label}", display_pose)
         self.node_id_counter += 1
 
     def update_node(self, node_id, current_robot_pose):
+        if node_id not in self.graph.nodes:
+            self.get_logger().warning(f"Attempted to update non-existent node: {node_id}")
+            return
+
+        node_data = self.graph.nodes[node_id]
+
+        # 1. Safely get or initialize the 'views' counter, then increment
+        # (Using .get() ensures backwards compatibility if you load an older graph)
+        views = node_data.get('views', 1) + 1
+        node_data['views'] = views
+
+        # 2. Calculate the decaying alpha
+        # Starts high for fast initial settling, bottoms out at 0.1 for micro-corrections
+        alpha = max(0.1, 0.5 / views)
+
         # 1. Get the old position data
         old_x, old_y, _ = self.graph.nodes[node_id]['pos']
         
@@ -233,7 +267,7 @@ class BatchSemanticGraph(Node):
         # 3. Moving Average Logic
         # alpha controls how fast the node moves towards the new position.
         # 0.1 = very stable, 1.0 = jumps instantly to new position.
-        alpha = 0.5 
+        #alpha = 0.5 
 
         updated_x = (old_x * (1 - alpha)) + (new_x * alpha)
         updated_y = (old_y * (1 - alpha)) + (new_y * alpha)
@@ -248,7 +282,50 @@ class BatchSemanticGraph(Node):
         self.graph.nodes[node_id]['timestamps'].append(current_time)
         
         # Log strictly for debugging (optional)
-        self.get_logger().info(f"Refined Pos for ID {node_id}: ({updated_x:.2f}, {updated_y:.2f})")
+        #self.get_logger().info(f"Refined Pos for ID {node_id}: ({updated_x:.2f}, {updated_y:.2f})")
+
+        # Rich console print
+        # label = self.graph.nodes[node_id].get('label', 'unknown')
+        # updated_pose = (updated_x, updated_y, current_robot_pose[2])
+        # self.record_event("UPDATE", f"{label} (ID: {node_id})", updated_pose)
+        label = self.graph.nodes[node_id].get('label', 'unknown')
+        updated_pose = (updated_x, updated_y, current_robot_pose[2])
+        self.record_event("UPDATE", f"\\[ID={node_id}] {label}", updated_pose)
+
+
+    # def update_node(self, node_id, new_position):
+    #     """
+    #     Updates a node's position using a decaying learning rate (alpha)
+    #     based on how many times the node has been viewed.
+    #     """
+    #     if node_id not in self.graph.nodes:
+    #         self.get_logger().warning(f"Attempted to update non-existent node: {node_id}")
+    #         return
+
+    #     node_data = self.graph.nodes[node_id]
+
+    #     # 1. Safely get or initialize the 'views' counter, then increment
+    #     # (Using .get() ensures backwards compatibility if you load an older graph)
+    #     views = node_data.get('views', 1) + 1
+    #     node_data['views'] = views
+
+    #     # 2. Calculate the decaying alpha
+    #     # Starts high for fast initial settling, bottoms out at 0.1 for micro-corrections
+    #     alpha = max(0.1, 0.5 / views)
+
+    #     # 3. Apply the Exponential Moving Average
+    #     old_pos = np.array(node_data['position'])
+    #     new_pos = np.array(new_position)
+        
+    #     updated_pos = (1.0 - alpha) * old_pos + alpha * new_pos
+
+    #     # 4. Save the updated position back to the graph
+    #     node_data['position'] = updated_pos.tolist()
+
+    #     self.get_logger().debug(
+    #         f"Updated node '{node_data.get('label', node_id)}' | "
+    #         f"Views: {views} | Alpha: {alpha:.3f} | New Pos: {node_data['position']}"
+    #     )
 
     #def publish_markers(self):
     #    # ADD FOR RVIZ
@@ -350,7 +427,7 @@ class BatchSemanticGraph(Node):
         Returns nodes ranked by how close their LAST SEEN timestamp is
         to the requested query time (Unix seconds, float).
         """
-        query_time_ns = int(request.query_time_sec * 1e9)  # Convert to nanoseconds
+        query_time_ns = int(request.query_time * 1e9)  # Convert to nanoseconds
         top_k_limit = request.top_k if request.top_k > 0 else self.get_parameter("top_k_return").value
 
         candidates = []
@@ -389,21 +466,23 @@ class BatchSemanticGraph(Node):
         if not hasattr(self, 'pose_msg') or self.pose_msg is None:
             return
 
+        
+
         self.ax.clear()
         self.ax.grid(True, linestyle='--', alpha=0.5)
         self.ax.set_title(f"Semantic Graph: {self.graph.number_of_nodes()} Nodes")
         
         # --- SWAPPED AXIS LABELS ---
-        self.ax.set_xlabel("Y [m] (Left/Right)")
-        self.ax.set_ylabel("X [m] (Forward/Back)")
+        self.ax.set_xlabel("Y [m]")
+        self.ax.set_ylabel("X [m]")
 
         # 1. Extract Robot Position
         rx = self.pose_msg.pose.pose.position.x
         ry = self.pose_msg.pose.pose.position.y
         
         # 2. Center View (X is vertical, Y is horizontal)
-        self.ax.set_xlim(ry - 5, ry + 5)
-        self.ax.set_ylim(rx - 5, rx + 5)
+        self.ax.set_xlim(ry - 100, ry + 100)
+        self.ax.set_ylim(rx - 50, rx + 50)
         #self.ax.invert_xaxis() 
 
         # 3. Draw Robot (Red Triangle pointing up)
@@ -418,14 +497,21 @@ class BatchSemanticGraph(Node):
             
             # Extract data including ID
             for node_id, data in self.graph.nodes(data=True):
-                xs.append(data['pos'][0])
-                ys.append(data['pos'][1])
+
+                # Jitter for better visualization
+                jx = np.random.uniform(-1, 1)
+                jy = np.random.uniform(-1, 1)
+
+                xs.append(data['pos'][0]+jx)
+                ys.append(data['pos'][1]+jy)
                 # Format: "label (id)"
-                labels.append(f"{data.get('label', '?')} ({node_id})")
+                #labels.append(f"{data.get('label', '?')} ({node_id})")
+                #labels.append(f"{node_id}")
+                labels.append(f"")
             
             # Plot Nodes (Blue Circles)
             # alpha=0.5 helps see overlapping nodes
-            self.ax.clear() ##CHECK
+            #self.ax.clear() ##CHECK
 
             self.ax.scatter(ys, xs, c='blue', s=100, alpha=0.5, edgecolors='k', zorder=5)
 
@@ -446,6 +532,37 @@ class BatchSemanticGraph(Node):
         plt.draw()
         plt.pause(0.001)
 
+    ## RICH CONSOLE
+    def generate_table(self) -> Table:
+        """Dynamically generates a rich Table based on the stored events."""
+        table = Table(
+            show_header=True, 
+            header_style="bold white", 
+            title="Graph Memory Node Events"
+        )
+        
+        table.add_column("Action", style="bold", width=10)
+        table.add_column("Date", justify="left", style="dim")
+        table.add_column("Label", justify="left", style="cyan")
+        table.add_column("Pose (x, y, yaw)", justify="right", style="green")
+
+        for action, date_str, label, pose_str in self.events:
+            action_fmt = "[green][CREATE][/green]" if action == "CREATE" else "[yellow][UPDATE][/yellow]"
+            table.add_row(action_fmt, date_str, label, pose_str)
+
+        return table
+
+    def record_event(self, action: str, label: str, pose: tuple):
+        """Records an event and triggers a Live display update."""
+        date_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        pose_str = f"({pose[0]:.2f}, {pose[1]:.2f}, {pose[2]:.2f})"
+        
+        self.events.append((action, date_str, label, pose_str))
+        
+        # If the live display is active, update it with the new table
+        if hasattr(self, 'live'):
+            self.live.update(self.generate_table())
+
 
 #def main():
 #    rclpy.init()
@@ -454,15 +571,33 @@ class BatchSemanticGraph(Node):
 #    node.destroy_node()
 #    rclpy.shutdown()
 
+# def main():
+#     rclpy.init()
+#     node = BatchSemanticGraph()
+    
+#     try:
+#         rclpy.spin(node)
+#     except KeyboardInterrupt:
+#         pass
+#     finally:
+#         plt.close('all')  # Close the plot window
+#         node.destroy_node()
+#         rclpy.shutdown()
+
 def main():
     rclpy.init()
     node = BatchSemanticGraph()
     
-    try:
-        rclpy.spin(node)
-    except KeyboardInterrupt:
-        pass
-    finally:
-        plt.close('all')  # Close the plot window
-        node.destroy_node()
-        rclpy.shutdown()
+    # Start the Live context manager. refresh_per_second=4 keeps it fluid.
+    with Live(node.generate_table(), refresh_per_second=4) as live:
+        # Assign the live instance to the node so it can trigger updates
+        node.live = live
+        
+        try:
+            rclpy.spin(node)
+        except KeyboardInterrupt:
+            pass
+        finally:
+            plt.close('all')  # Close the plot window
+            node.destroy_node()
+            rclpy.shutdown()

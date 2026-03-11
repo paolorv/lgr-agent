@@ -56,9 +56,8 @@ fi
 
 # Build and run the Docker container
 CONTAINER_NAME="rosa-ltm-test"
-
 #echo "Building the $CONTAINER_NAME Docker image..."
-#docker build --build-arg DEVELOPMENT=$DEVELOPMENT -t $CONTAINER_NAME -f Dockerfile . || { echo "Error: Docker build failed"; exit 1; }
+# docker build --build-arg DEVELOPMENT=$DEVELOPMENT -t $CONTAINER_NAME -f Dockerfile . || { echo "Error: Docker build failed"; exit 1; }
 
 echo "Running the Docker container..."
 
@@ -135,7 +134,6 @@ docker run -it --rm \
   -v "$PWD/.gazebo":/app/.gazebo \
   -v "$HOME/.gazebo/models":/root/.gazebo/models \
   -v "$HOME/.gazebo/worlds":/root/.gazebo/worlds \
-  -v /mnt/1Tb-u/NaVQA_eval:/app/NaVQA_eval \
   --group-add video \
   --network host \
   --privileged \

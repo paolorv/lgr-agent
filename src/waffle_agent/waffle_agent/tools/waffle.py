@@ -36,7 +36,7 @@ def init_waffle_tools(node: Node):
     global NODE, CMD_VEL_PUB
     NODE = node
     CMD_VEL_PUB = NODE.create_publisher(Twist, "/cmd_vel", 10)
-    NODE.create_subscription(Odometry, "/odometry", _odom_callback, 10)
+    NODE.create_subscription(Odometry, "/odom", _odom_callback, 10)
     NODE.get_logger().info("Waffle Tools initialized.")
 
 def _odom_callback(msg):
