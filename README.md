@@ -79,8 +79,49 @@ start
 
 
 ## Evaluate with NaVQA 
-To test the performance over the NaVQA dataset, clone and process the coda_devkit following the official ReMEmbR guide.
-Before launching the processing, replace the unsafe bash files and scripts of the original repository with the ones in `utility/evaluation_scripts_patch`.
+To test the performance over the NaVQA dataset, clone **coda_devkit** and **remembr** inside a new `NaVQA_eval` folder on the device, and process the coda dataset following the official ReMEmbR guide. To allow visibility of the global folder, expose it correctly in the main container's `Dockerfile`.
+
+First follow the "Launching the Containers" section, and build the packages from the main cointainer with `./buildPackages`.
+
+Before launching the processing, replace the bash files and scripts of the original repositories from CODA and ReMEmbR with the ones in `utility/evaluation_scripts_patch`.
+The **fully-automated process** can be ran by copying `runfulleval.sh` inside `remembr/remembr` and running it, selecting VLM and sequences to test. Note that the "Extract Dataset Captions and Labels" passage is still needed. Otherwise, single sequences can be tested as in the following subsections.
+
+### Extract Dataset Captions and Labels (CODA Player)
+To process the CODA dataset sequences and extract both the narrative captions and dense labels (`dlabels`) from .pkl files using Florence-2, use the `coda_player` node. 
+
+Make sure your Florence-2 container/server is running, then execute the player for your desired sequence (e.g., Sequence 0) specifying the requested extraction interval to match the desired processing FPS:
+```
+cd /app/NaVQA_eval/remembr/remembr/
+ros2 run waffle_agent coda_player --ros-args -p seconds_per_frame:=2.0
+```
+
+### Generate the QA Dataset
+Parse the processed captions to generate the ground-truth testing questions for a specific sequence:
+```
+python3 scripts/question_scripts/form_question_jsons.py --caption_file captions_Florence2-large_2_secs --seq_id 0
+```
+### Initialize Memory Handlers
+Inside the main container, launch the vector database and memory graph managers to wait for incoming data in three separate terminals:
+```
+ros2 run waffle_agent memory_builder_node
+ros2 run waffle_agent graphmemory_manager
+/usr/bin/python3 remembr_server.py
+```
+### Populate Memory from JSON
+Inside the main container, after preprocessing captions and labels inside `remembr/remembr/data/captions` for each interested sequence, spool the memory entries inside the nodes with:
+```
+ros2 run waffle_agent json_memory_populator --ros-args -p json_path:="./data/captions/0/captions_Florence2-large_2_secs.json"
+```
+### Evaluate the agent
+Inside the main container, evaluate the agent on the cosidered sequence:
+```
+ros2 run waffle_agent rosa_navqa_evaluator --ros-args -p sequence_id:=0 -p memory_mode:="both" -p vlm_name:="Florence2-large"
+```
+
+
+
+
+
 
 
 
