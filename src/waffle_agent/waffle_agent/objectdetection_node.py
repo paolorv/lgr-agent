@@ -106,7 +106,7 @@ class ObjectDetectionClient(Node):
             img_bytes = buffer.tobytes()
 
             files = {'file': ('camera_frame.jpg', img_bytes, 'image/jpeg')}
-            data = {'task': '<OD>'}
+            data = {'task': '<DENSE_REGION_CAPTION>'}
 
             self.get_logger().info("Sending image to server...")
             start = time.time()

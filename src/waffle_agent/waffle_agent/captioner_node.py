@@ -10,7 +10,7 @@ import time
 
 class VILACaptionerClient(Node):
     def __init__(self):
-        super().__init__('vila_captioner_client')
+        super().__init__('captioner_client')
         self.bridge = CvBridge()
         
         # Latest available frame
@@ -33,7 +33,7 @@ class VILACaptionerClient(Node):
         self.process_timer = self.create_timer(7.0, self.timer_callback)
 
         self.api_url = "http://localhost:8001/caption"
-        self.get_logger().info("VILA Client Started. Sending multipart/form-data requests...")
+        self.get_logger().info("Captioning Client Started. Sending multipart/form-data requests...")
 
 
     def img_callback(self, msg):
