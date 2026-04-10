@@ -1,4 +1,11 @@
 # EmbodiedLGR: Integrating Lightweight Graph Representation and Retrieval for Semantic-Spatial Memory in Robotic Agents
+
+[![ROS 2](https://img.shields.io/badge/ROS_2-22314E?style=flat&logo=ros&logoColor=white)](https://docs.ros.org/)
+[![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat&logo=docker&logoColor=white)](https://www.docker.com/)
+[![Milvus](https://img.shields.io/badge/Milvus-0D1526?style=flat&logo=milvus&logoColor=white)](https://milvus.io/)
+[![Gazebo](https://img.shields.io/badge/Gazebo_Harmonic-FF6600?style=flat&logo=gazebo&logoColor=white)](https://gazebosim.org/)
+[![Florence-2](https://img.shields.io/badge/Florence--2-FFD21E?style=flat&logo=huggingface&logoColor=black)](https://huggingface.co/microsoft/Florence-2-large)
+
 EmbodiedLGR is an agentic architecture enabling LLMs to reason over semantic-spatial information for agents deployed on robotic platforms.
 The current project is still in testing phase.
 Further details may be added once the project reaches further development steps.
