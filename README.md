@@ -7,7 +7,6 @@
 [![Florence-2](https://img.shields.io/badge/Florence--2-FFD21E?style=flat&logo=huggingface&logoColor=black)](https://huggingface.co/microsoft/Florence-2-large)
 
 EmbodiedLGR is an agentic architecture enabling LLMs to reason over semantic-spatial information for agents deployed on robotic platforms.
-The current project is still in testing phase.
 Further details may be added once the project reaches further development steps.
 
 ## Launching the containers
